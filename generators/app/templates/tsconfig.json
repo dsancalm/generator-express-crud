@@ -1,0 +1,29 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "esModuleInterop": true,
+    "target": "es6",
+    "lib": ["ES2021.String"],
+    "noImplicitAny": true,
+    "moduleResolution": "node",
+    "types": ["reflect-metadata", "jest", "chai"],
+    "sourceMap": true,
+    "outDir": "dist",
+    "baseUrl": "./",
+    "paths": {
+      "*": ["node_modules/*", "src/types/*"],
+      "@controllers/*": ["./src/controllers/*"],
+      "@service/*": ["./src/service/*"],
+      "@models/*": ["./src/models/*"],
+      "@interfaces/*": ["./src/interfaces/*"],
+      "@dao/*": ["./src/dao/*"],
+      "@common/*": ["./src/common/*"],
+      "@repository/*": ["./src/dao/repository/*"]
+    },
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "strict": true
+  },
+  "compileOnSave": true,
+  "include": ["src/**/*", "tests/**/*"]
+}
