@@ -4,30 +4,34 @@ const chalk = require("chalk");
 const yosay = require("yosay");
 
 module.exports = class extends Generator {
-  prompting() {
-    // Have Yeoman greet the user.
+  async prompting() {
     this.log(
       yosay(
         `Welcome to the prime ${chalk.red("generator-express-crud")} generator!`
       )
     );
 
-    const prompts = [
+    this.answers = await this.prompt([
+      {
+        type: "input",
+        name: "modelName",
+        message: "Your model name"
+      },
+      {
+        type: "input",
+        name: "modelFields",
+        message: "Your model body"
+      },
       {
         type: "confirm",
-        name: "someAnswer",
-        message: "Would you like to enable this option?",
-        default: true
+        name: "cool",
+        message: "Would you like to enable the Cool feature?"
       }
-    ];
-
-    return this.prompt(prompts).then(props => {
-      // To access props later use this.props.someAnswer;
-      this.props = props;
-    });
+    ]);
   }
 
   writing() {
+    var modelNameFile = this.answers.modelName;
     this.fs.copyTpl(
       this.templatePath("tsconfig.json"),
       this.destinationPath("tsconfig.json")
@@ -35,6 +39,41 @@ module.exports = class extends Generator {
     this.fs.copyTpl(
       this.templatePath("package.json"),
       this.destinationPath("package.json")
+    );
+    this.fs.copyTpl(
+      this.templatePath("dao/repository/Repository.ts"),
+      this.destinationPath(
+        "src/dao/repository/" + modelNameFile + "Repository.ts"
+      ),
+      {
+        modelName: this.answers.modelName,
+        modelFields: this.answers.modelFields,
+        modelVar: this.answers.modelName.toLowerCase()
+      }
+    );
+    this.fs.copyTpl(
+      this.templatePath("interfaces/dao/Dao.ts"),
+      this.destinationPath("src/interfaces/dao/I" + modelNameFile + "Dao.ts"),
+      {
+        modelName: this.answers.modelName,
+        modelVar: this.answers.modelName.toLowerCase()
+      }
+    );
+
+    this.fs.copyTpl(
+      this.templatePath("dao/DaoImpl.ts"),
+      this.destinationPath("src/dao/" + modelNameFile + "DaoImpl.ts"),
+      {
+        modelName: this.answers.modelName,
+        modelVar: this.answers.modelName.toLowerCase()
+      }
+    );
+    this.fs.copyTpl(
+      this.templatePath("models/entities/Model.ts"),
+      this.destinationPath("src/models/entities/" + modelNameFile + ".ts"),
+      {
+        modelName: this.answers.modelName
+      }
     );
   }
 };

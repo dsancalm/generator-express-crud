@@ -7,11 +7,11 @@ There is no runtime information that could allow any reflection on interface typ
 Take a look at https://github.com/Microsoft/TypeScript/issues/3628 for more information about this.
 */
 
-import IUser from "@models/entities/User";
+import I<%= modelName %> from "@models/entities/<%= modelName %>";
 
-export default abstract class IUserDao {
-  abstract saveUser(id: string): Promise<IUser>;
-  abstract getUserById(id: string): Promise<IUser>;
-  abstract updateUser(user: IUser): Promise<IUser>;
-  abstract deleteUserById(id: string): Promise<IUser>;
+export default abstract class I<%= modelName %>Dao {
+  abstract save<%= modelName %>(<%= modelVar %>: I<%= modelName %>): Promise<I<%= modelName %>>;
+  abstract get<%= modelName %>ById(id: string): Promise<I<%= modelName %>>;
+  abstract update<%= modelName %>(<%= modelVar %>: I<%= modelName %>): Promise<I<%= modelName %>>;
+  abstract delete<%= modelName %>ById(id: string): Promise<I<%= modelName %>>;
 }
