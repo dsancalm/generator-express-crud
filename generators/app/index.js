@@ -43,17 +43,15 @@ module.exports = class extends Generator {
     const modelBodyYaml = this.fs.read(this.model.modelFile);
     const arrayKeysTypes = modelBodyYaml.split(";");
     var modelFieldsMongoSchema = "";
-    arrayKeysTypes
-      .filter(line => line.length > 0)
-      .forEach(line => {
-        let keyValue = line.split(":");
-        let key = keyValue[0];
-        let value = keyValue[1];
-        modelFieldsMongoSchema += key + ": {";
-        modelFieldsMongoSchema += "type: " + value + ",";
-        modelFieldsMongoSchema += "required: false";
-        modelFieldsMongoSchema += "}, ";
-      });
+    arrayKeysTypes.filter(Boolean).forEach(line => {
+      let keyValue = line.split(":");
+      let key = keyValue[0];
+      let value = keyValue[1];
+      modelFieldsMongoSchema += key + ": {";
+      modelFieldsMongoSchema += "type: " + value + ",";
+      modelFieldsMongoSchema += "required: false";
+      modelFieldsMongoSchema += "}, ";
+    });
     var modelNameFile = this.model.modelName;
     this.fs.copyTpl(
       this.templatePath("tsconfig.json.txt"),
