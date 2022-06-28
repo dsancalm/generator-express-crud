@@ -1,29 +1,29 @@
 import express from "express";
 import { Container } from "typescript-ioc";
-import { UserController } from "./controller";
+import { <%= modelName %>Controller } from "./<%= modelName %>Controller";
 
-const urlPath = "/users";
+const urlPath = "/<%= modelVar %>";
 
-export const userRouter = express.Router();
+export const <%= modelVar %>Router = express.Router();
 
-const userController = Container.get(UserController);
+const <%= modelVar %>Controller = Container.get(<%= modelName %>Controller);
 
-userRouter.get("/generateUser", (req, res) => {
-  userController.generateUser(req, res);
+<%= modelVar %>Router.post("/save<%= modelName %>", (req, res) => {
+  <%= modelVar %>Controller.save<%= modelName %>(req, res);
 });
 
 
-userRouter.get("/getUser", (req, res) => {
-  userController.getUser(req, res);
+<%= modelVar %>Router.get("/get<%= modelName %>ById", (req, res) => {
+  <%= modelVar %>Controller.get<%= modelName %>ById(req, res);
 });
 
 
 
-userRouter.delete("/deleteUser", (req, res) => {
-  userController.deleteUser(req, res);
+<%= modelVar %>Router.delete("/delete<%= modelName %>ById", (req, res) => {
+  <%= modelVar %>Controller.delete<%= modelName %>ById(req, res);
 });
 
 
-userRouter.post("/updateUser", (req, res) => {
-  userController.updateUser(req, res);
+<%= modelVar %>Router.post("/update<%= modelName %>", (req, res) => {
+  <%= modelVar %>Controller.update<%= modelName %>(req, res);
 });

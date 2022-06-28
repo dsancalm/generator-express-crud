@@ -1,17 +1,17 @@
 import 'module-alias/register';
 import express from 'express';
-import { userRouter } from '@controllers/user/router';
+import { <%= modelVar %>Router } from '@controllers/<%= modelName %>/<%= modelName %>Router';
 import mongoose from 'mongoose';
 
 
 const app = express();
 app.use(express.json());
-const port = 8080; // default port to listen
+const port = <%= port %>; // default port to listen
 
-app.use('/api', userRouter);
+app.use('/api', <%= modelVar %>Router);
 
 
-mongoose.connect('mongodb://mongo:dBIuBRCsFztpbBLdGpX5@containers-us-west-67.railway.app:6754', () => {
+mongoose.connect(<%= mongoUrl %>, () => {
   console.log('connected to database')
 })
 

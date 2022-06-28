@@ -1,21 +1,23 @@
-import IUserService from "@interfaces/service/IUserService";
-import IUser from "@models/entities/User";
-import { UserServiceImpl } from "@service/UserServiceImpl";
+import I<%= modelName %>Service from "@interfaces/service/I<%= modelName %>Service";
+import I<%= modelName %> from "@models/entities/<%= modelName %>";
+import { <%= modelName %>ServiceImpl } from "@service/<%= modelName %>ServiceImpl";
 import express from "express";
 import { Container, Inject } from "typescript-ioc";
 
-Container.bind(IUserService).to(UserServiceImpl);
+Container.bind(I<%= modelName %>Service).to(<%= modelName %>ServiceImpl);
 
-export class UserController {
-  private userService: IUserService;
+export class <%= modelName %>Controller {
+  private <%= modelVar %>Service: I<%= modelName %>Service;
 
-  constructor(@Inject userService: IUserService) {
-    this.userService = userService;
+  constructor(@Inject <%= modelVar %>Service: I<%= modelName %>Service) {
+    this.<%= modelVar %>Service = <%= modelVar %>Service;
   }
 
-  public generateUser(_req: express.Request, res: express.Response) {
-    this.userService
-      .generateNewUser()
+  public save<%= modelName %>(req: express.Request, res: express.Response) {
+
+    const <%= modelVar %>: I<%= modelName %> = req.body.<%= modelVar %> as I<%= modelName %>;
+    this.<%= modelVar %>Service
+      .save<%= modelName %>(<%= modelVar %>)
       .then((respuestaService) => {
         res.status(200).send(respuestaService);
       })
@@ -24,10 +26,10 @@ export class UserController {
       });
   }
 
-  public getUser(req: express.Request, res: express.Response) {
+  public get<%= modelName %>ById(req: express.Request, res: express.Response) {
     const id: string = req.query.id as string;
-    this.userService
-      .getUserById(id)
+    this.<%= modelVar %>Service
+      .get<%= modelName %>ById(id)
       .then((respuestaService) => {
         res.status(200).send(respuestaService);
       })
@@ -36,10 +38,10 @@ export class UserController {
       });
   }
 
-  public deleteUser(req: express.Request, res: express.Response) {
+  public delete<%= modelName %>ById(req: express.Request, res: express.Response) {
     const id: string = req.query.id as string;
-    this.userService
-      .deleteUserById(id)
+    this.<%= modelVar %>Service
+      .delete<%= modelName %>ById(id)
       .then((respuestaService) => {
         res.status(200).send(respuestaService);
       })
@@ -48,10 +50,10 @@ export class UserController {
       });
   }
 
-  public updateUser(req: express.Request, res: express.Response) {
-    const user: IUser = req.body.user as IUser;
-    this.userService
-      .updateUser(user)
+  public update<%= modelName %>(req: express.Request, res: express.Response) {
+    const <%= modelVar %>: I<%= modelName %> = req.body.<%= modelVar %> as I<%= modelName %>;
+    this.<%= modelVar %>Service
+      .update<%= modelName %>(<%= modelVar %>)
       .then((respuestaService) => {
         res.status(200).send(respuestaService);
       })
