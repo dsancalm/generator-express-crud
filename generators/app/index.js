@@ -2,7 +2,6 @@
 const Generator = require("yeoman-generator");
 const chalk = require("chalk");
 const yosay = require("yosay");
-
 module.exports = class extends Generator {
   async prompting() {
     this.log(
@@ -15,29 +14,46 @@ module.exports = class extends Generator {
       {
         type: "input",
         name: "modelName",
-        message: "Your model name"
+        message: "Introduce el nombre de la entidad a generar"
       },
       {
         type: "input",
-        name: "modelFields",
-        message: "Your model body"
+        name: "modelFile",
+        message:
+          "Introduce el nombre del fichero .yaml que contiene el modelo de datos de tu entidad"
       }
     ]);
     this.appConfig = await this.prompt([
       {
         type: "input",
         name: "port",
-        message: "Your app port"
+        message: "Introduce el puerto por el que quieres que arranque tu app"
       },
       {
         type: "input",
         name: "mongoUrl",
-        message: "Your mongo url database"
+        message: "Introduce la url de tu base de datos MongoDB",
+        default:
+          "mongodb://mongo:dBIuBRCsFztpbBLdGpX5@containers-us-west-67.railway.app:6754"
       }
     ]);
   }
 
   writing() {
+    const modelBodyYaml = this.fs.read(this.model.modelFile);
+    const arrayKeysTypes = modelBodyYaml.split(";");
+    var modelFieldsMongoSchema = "";
+    arrayKeysTypes
+      .filter(line => line.length > 0)
+      .forEach(line => {
+        let keyValue = line.split(":");
+        let key = keyValue[0];
+        let value = keyValue[1];
+        modelFieldsMongoSchema += key + ": {";
+        modelFieldsMongoSchema += "type: " + value + ",";
+        modelFieldsMongoSchema += "required: false";
+        modelFieldsMongoSchema += "}, ";
+      });
     var modelNameFile = this.model.modelName;
     this.fs.copyTpl(
       this.templatePath("tsconfig.json.txt"),
@@ -54,7 +70,7 @@ module.exports = class extends Generator {
       ),
       {
         modelName: this.model.modelName,
-        modelFields: this.model.modelFields,
+        modelFields: modelFieldsMongoSchema,
         modelVar: this.model.modelName.toLowerCase()
       }
     );
@@ -79,7 +95,8 @@ module.exports = class extends Generator {
       this.templatePath("models/entities/Model.ejs"),
       this.destinationPath("src/models/entities/" + modelNameFile + ".ts"),
       {
-        modelName: this.model.modelName
+        modelName: this.model.modelName,
+        modelBody: modelBodyYaml
       }
     );
     this.fs.copyTpl(

@@ -3,7 +3,14 @@ import { Document, Schema, model } from "mongoose";
 
 interface I<%= modelName %>Document extends I<%= modelName %>, Document {}
 
-const <%= modelName %>Fields: Record<keyof I<%= modelName %>, any> = <%= modelFields %>;
+const <%= modelName %>Fields: Record<keyof I<%= modelName %>, any> = {
+
+  id<%= modelName %>: {
+    type: String,
+    required: true,
+  },
+  <%= modelFields %>
+};
 
 const <%= modelName %>Schema = new Schema(<%= modelName %>Fields, {
   toObject: {
