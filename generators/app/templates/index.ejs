@@ -1,0 +1,17 @@
+import 'module-alias/register';
+import express from 'express';
+<%- importRouter %>
+import { database } from './database';
+
+
+const app = express();
+app.use(express.json());
+const port = <%= port %>; // default port to listen
+
+<%- modelRouter %>
+
+database();
+
+app.listen(port, () => {
+    console.log(`Server started at http://localhost:${port}`);
+});

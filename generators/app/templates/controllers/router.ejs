@@ -1,0 +1,32 @@
+import express from "express";
+import { Container } from "typescript-ioc";
+import { <%= modelName %>Controller } from "./<%= modelName %>Controller";
+
+/**
+* Routing for <%= modelName %>
+*/
+
+
+export const <%= modelVar %>Router = express.Router();
+
+const <%= modelVar %>ControllerInstance = Container.get(<%= modelName %>Controller);
+
+<%= modelVar %>Router.post("/save<%= modelName %>", (req, res) => {
+  <%= modelVar %>ControllerInstance.save<%= modelName %>(req, res);
+});
+
+
+<%= modelVar %>Router.get("/get<%= modelName %>ById", (req, res) => {
+  <%= modelVar %>ControllerInstance.get<%= modelName %>ById(req, res);
+});
+
+
+
+<%= modelVar %>Router.delete("/delete<%= modelName %>ById", (req, res) => {
+  <%= modelVar %>ControllerInstance.delete<%= modelName %>ById(req, res);
+});
+
+
+<%= modelVar %>Router.post("/update<%= modelName %>", (req, res) => {
+  <%= modelVar %>ControllerInstance.update<%= modelName %>(req, res);
+});

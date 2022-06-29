@@ -1,0 +1,62 @@
+import {
+  Container,
+  Inject,
+  OnlyInstantiableByContainer,
+  Singleton,
+} from "typescript-ioc";
+import I<%= modelName %>Service from "@interfaces/service/I<%= modelName %>Service";
+import I<%= modelName %>Dao from "@interfaces/dao/I<%= modelName %>Dao";
+import <%= modelName %>DaoImpl from "@dao/<%= modelName %>DaoImpl";
+import I<%= modelName %> from "@models/entities/<%= modelName %>";
+
+Container.bind(I<%= modelName %>Dao).to(<%= modelName %>DaoImpl);
+
+@Singleton
+@OnlyInstantiableByContainer
+export class <%= modelName %>ServiceImpl implements I<%= modelName %>Service {
+  private <%= modelVar %>Dao: I<%= modelName %>Dao;
+
+  constructor(@Inject <%= modelVar %>Dao: I<%= modelName %>Dao) {
+    this.<%= modelVar %>Dao = <%= modelVar %>Dao;
+  }
+
+  public async delete<%= modelName %>ById(id: string): Promise<I<%= modelName %>> {
+    //Do some business logic...
+    try {
+      return await this.<%= modelVar %>Dao
+        .delete<%= modelName %>ById(id);
+    } catch {
+      return Promise.reject();
+    }
+  }
+
+  public async update<%= modelName %>(<%= modelVar %>: I<%= modelName %>): Promise<I<%= modelName %>> {
+    //Do some business logic...
+    try {
+      return await this.<%= modelVar %>Dao
+        .update<%= modelName %>(<%= modelVar %>);
+    } catch {
+      return Promise.reject();
+    }
+  }
+
+  public async get<%= modelName %>ById(id: string): Promise<I<%= modelName %>> {
+    //Do some business logic...
+    try {
+      return await this.<%= modelVar %>Dao
+        .get<%= modelName %>ById(id);
+    } catch {
+      return Promise.reject();
+    }
+  }
+
+  public async save<%= modelName %>(<%= modelVar %>: I<%= modelName %>): Promise<I<%= modelName %>> {
+    //Do some business logic...
+    try {
+      return await this.<%= modelVar %>Dao
+        .save<%= modelName %>(<%= modelVar %>);
+    } catch {
+      return Promise.reject();
+    }
+  }
+}

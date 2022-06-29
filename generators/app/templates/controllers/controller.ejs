@@ -1,0 +1,67 @@
+import I<%= modelName %>Service from "@interfaces/service/I<%= modelName %>Service";
+import I<%= modelName %> from "@models/entities/<%= modelName %>";
+import { <%= modelName %>ServiceImpl } from "@service/<%= modelName %>ServiceImpl";
+import express from "express";
+import { Container, Inject } from "typescript-ioc";
+
+Container.bind(I<%= modelName %>Service).to(<%= modelName %>ServiceImpl);
+
+/**
+* Controller <%= modelName %>Controller
+*/
+export class <%= modelName %>Controller {
+  private <%= modelVar %>Service: I<%= modelName %>Service;
+
+  constructor(@Inject <%= modelVar %>Service: I<%= modelName %>Service) {
+    this.<%= modelVar %>Service = <%= modelVar %>Service;
+  }
+
+  public save<%= modelName %>(req: express.Request, res: express.Response) {
+
+    const <%= modelVar %>: I<%= modelName %> = req.body.<%= modelVar %> as I<%= modelName %>;
+    this.<%= modelVar %>Service
+      .save<%= modelName %>(<%= modelVar %>)
+      .then((respuestaService) => {
+        res.status(200).send(respuestaService);
+      })
+      .catch((respuestaService) => {
+        res.status(404).send(respuestaService);
+      });
+  }
+
+  public get<%= modelName %>ById(req: express.Request, res: express.Response) {
+    const id: string = req.query.id as string;
+    this.<%= modelVar %>Service
+      .get<%= modelName %>ById(id)
+      .then((respuestaService) => {
+        res.status(200).send(respuestaService);
+      })
+      .catch((respuestaService) => {
+        res.status(404).send(respuestaService);
+      });
+  }
+
+  public delete<%= modelName %>ById(req: express.Request, res: express.Response) {
+    const id: string = req.query.id as string;
+    this.<%= modelVar %>Service
+      .delete<%= modelName %>ById(id)
+      .then((respuestaService) => {
+        res.status(200).send(respuestaService);
+      })
+      .catch((respuestaService) => {
+        res.status(404).send(respuestaService);
+      });
+  }
+
+  public update<%= modelName %>(req: express.Request, res: express.Response) {
+    const <%= modelVar %>: I<%= modelName %> = req.body.<%= modelVar %> as I<%= modelName %>;
+    this.<%= modelVar %>Service
+      .update<%= modelName %>(<%= modelVar %>)
+      .then((respuestaService) => {
+        res.status(200).send(respuestaService);
+      })
+      .catch((respuestaService) => {
+        res.status(404).send(respuestaService);
+      });
+  }
+}
