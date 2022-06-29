@@ -1,6 +1,8 @@
 import I<%= modelName %> from "@models/entities/<%= modelName %>";
 import { Document, Schema, model } from "mongoose";
-
+/**
+* Repository I<%= modelName %>
+*/
 interface I<%= modelName %>Document extends I<%= modelName %>, Document {}
 
 const <%= modelName %>Fields: Record<keyof I<%= modelName %>, any> = {

@@ -21,6 +21,7 @@ export class <%= modelName %>ServiceImpl implements I<%= modelName %>Service {
   }
 
   public async delete<%= modelName %>ById(id: string): Promise<I<%= modelName %>> {
+    //Do some business logic...
     try {
       return await this.<%= modelVar %>Dao
         .delete<%= modelName %>ById(id);
@@ -30,6 +31,7 @@ export class <%= modelName %>ServiceImpl implements I<%= modelName %>Service {
   }
 
   public async update<%= modelName %>(<%= modelVar %>: I<%= modelName %>): Promise<I<%= modelName %>> {
+    //Do some business logic...
     try {
       return await this.<%= modelVar %>Dao
         .update<%= modelName %>(<%= modelVar %>);
@@ -39,6 +41,7 @@ export class <%= modelName %>ServiceImpl implements I<%= modelName %>Service {
   }
 
   public async get<%= modelName %>ById(id: string): Promise<I<%= modelName %>> {
+    //Do some business logic...
     try {
       return await this.<%= modelVar %>Dao
         .get<%= modelName %>ById(id);
@@ -48,6 +51,7 @@ export class <%= modelName %>ServiceImpl implements I<%= modelName %>Service {
   }
 
   public async save<%= modelName %>(<%= modelVar %>: I<%= modelName %>): Promise<I<%= modelName %>> {
+    //Do some business logic...
     try {
       return await this.<%= modelVar %>Dao
         .save<%= modelName %>(<%= modelVar %>);

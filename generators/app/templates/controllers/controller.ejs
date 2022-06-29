@@ -6,6 +6,9 @@ import { Container, Inject } from "typescript-ioc";
 
 Container.bind(I<%= modelName %>Service).to(<%= modelName %>ServiceImpl);
 
+/**
+* Controller <%= modelName %>Controller
+*/
 export class <%= modelName %>Controller {
   private <%= modelVar %>Service: I<%= modelName %>Service;
 
