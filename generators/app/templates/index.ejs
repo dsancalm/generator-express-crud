@@ -1,6 +1,6 @@
 import 'module-alias/register';
 import express from 'express';
-import { <%= modelVar %>Router } from '@controllers/<%= modelName %>/<%= modelName %>Router';
+<%- importRouter %>
 import { database } from './database';
 
 
@@ -8,7 +8,7 @@ const app = express();
 app.use(express.json());
 const port = <%= port %>; // default port to listen
 
-app.use('/api', <%= modelVar %>Router);
+<%- modelRouter %>
 
 database();
 
