@@ -1,7 +1,7 @@
 import 'module-alias/register';
 import express from 'express';
 import { <%= modelVar %>Router } from '@controllers/<%= modelName %>/<%= modelName %>Router';
-import mongoose from 'mongoose';
+import { database } from './database';
 
 
 const app = express();
@@ -10,10 +10,7 @@ const port = <%= port %>; // default port to listen
 
 app.use('/api', <%= modelVar %>Router);
 
-
-mongoose.connect("<%= mongoUrl %>", () => {
-  console.log('connected to database')
-})
+database();
 
 app.listen(port, () => {
     console.log(`Server started at http://localhost:${port}`);

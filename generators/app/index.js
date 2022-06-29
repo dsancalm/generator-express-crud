@@ -32,6 +32,7 @@ module.exports = class extends Generator {
       {
         type: "input",
         name: "mongoUrl",
+        when: !this.fs.exists(this.destinationPath("src/database.ts")),
         message: "Introduce la url de tu base de datos MongoDB",
         default:
           "mongodb://mongo:dBIuBRCsFztpbBLdGpX5@containers-us-west-67.railway.app:6754"
@@ -151,5 +152,14 @@ module.exports = class extends Generator {
         modelVar: this.model.modelName.toLowerCase()
       }
     );
+    if (!this.fs.exists(this.destinationPath("src/database.ts"))) {
+      this.fs.copyTpl(
+        this.templatePath("database.ejs"),
+        this.destinationPath("src/database.ts"),
+        {
+          mongoUrl: this.appConfig.mongoUrl
+        }
+      );
+    }
   }
 };
