@@ -1,5 +1,8 @@
 # generator-express-crud
- A NPX tool that allows to the developer to deploy fast backend apps only passing a few arguments, like the port, url database or entity model in yaml format
+ A NPX tool that allows to the developer to deploy fast backend apps only passing a few arguments, like the port, url database or entity model in yaml format.
+ 
+ [NPM](https://www.npmjs.com/package/generator-express-crud "npm")
+
  
 Execution example:
 ```Bash
