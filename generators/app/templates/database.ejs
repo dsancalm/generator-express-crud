@@ -1,7 +1,6 @@
 import mongoose from "mongoose"
 
-export function database() {
-    mongoose.connect("<%= mongoUrl %>", () => {
-        console.log('connected to database')
-      })
+export async function database(): Promise<typeof mongoose> {
+  console.log("connecting to database");
+  return mongoose.connect("<%= mongoUrl %>");
 }
