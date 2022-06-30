@@ -17,7 +17,7 @@ module.exports = class expressCrud extends Generator {
         type: "input",
         name: "modelFile",
         message:
-          "Introduce el nombre del fichero .yaml que contiene el modelo de datos de tu entidad"
+          "Introduce el nombre del fichero .yaml que contiene el modelo de datos de todas tus entidades"
       }
     ]);
     this.appConfig = await this.prompt([
@@ -30,14 +30,15 @@ module.exports = class expressCrud extends Generator {
         type: "input",
         name: "mongoUrl",
         when: !this.fs.exists(this.destinationPath("src/database.ts")),
-        message: "Introduce la url de tu base de datos MongoDB",
-        default:
-          "mongodb://mongo:dBIuBRCsFztpbBLdGpX5@containers-us-west-67.railway.app:6754"
+        message: "Introduce la url de tu base de datos MongoDB"
       }
     ]);
   }
 
   writing() {
+    this.sourceRoot(
+      "node_modules/generator-express-crud/generators/app/templates/"
+    );
     this.fs.copyTpl(
       this.templatePath("tsconfig.json.txt"),
       this.destinationPath("tsconfig.json")
@@ -54,7 +55,6 @@ module.exports = class expressCrud extends Generator {
     var importRouter = "";
     try {
       const doc = yaml.load(this.fs.read(this.model.modelFile));
-      console.log(doc);
       var entitiesToCreate = Object.keys(doc);
       entitiesToCreate.forEach(entity => {
         var entityKeys = Object.keys(doc[entity]);
@@ -79,8 +79,6 @@ module.exports = class expressCrud extends Generator {
           modelFieldsMongoSchema += "}, ";
         });
         var modelNameFile = entity;
-        console.log(modelBodyEntity);
-        console.log(modelFieldsMongoSchema);
         this.fs.copyTpl(
           this.templatePath("dao/repository/Repository.ejs"),
           this.destinationPath(

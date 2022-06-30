@@ -20,8 +20,7 @@
     "module-alias": "^2.2.2",
     "mongoose": "^6.4.0",
     "ts-jest": "^28.0.5",
-    "typescript-ioc": "^3.2.2",
-    "uuid": "^8.3.2"
+    "typescript-ioc": "^3.2.2"
   },
   "devDependencies": {
     "@types/chai": "^4.3.1",
