@@ -3,6 +3,9 @@ import { <%= modelName %>Repository } from "@repository/<%= modelName %>Reposito
 import I<%= modelName %> from "@models/entities/<%= modelName %>";
 import { Singleton, OnlyInstantiableByContainer } from "typescript-ioc";
 
+/**
+* Dao <%= modelName %>DaoImpl
+*/
 @Singleton
 @OnlyInstantiableByContainer
 export default class <%= modelName %>DaoImpl implements I<%= modelName %>Dao {

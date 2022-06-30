@@ -10,7 +10,9 @@ import <%= modelName %>DaoImpl from "@dao/<%= modelName %>DaoImpl";
 import I<%= modelName %> from "@models/entities/<%= modelName %>";
 
 Container.bind(I<%= modelName %>Dao).to(<%= modelName %>DaoImpl);
-
+/**
+* Service <%= modelName %>ServiceImpl
+*/
 @Singleton
 @OnlyInstantiableByContainer
 export class <%= modelName %>ServiceImpl implements I<%= modelName %>Service {

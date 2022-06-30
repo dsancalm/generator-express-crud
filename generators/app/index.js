@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 "use strict";
 const Generator = require("yeoman-generator");
 const chalk = require("chalk");
@@ -8,7 +9,7 @@ module.exports = class expressCrud extends Generator {
   async prompting() {
     this.log(
       yosay(
-        `Welcome to the prime ${chalk.red("generator-express-crud")} generator!`
+        `${chalk.red("generator-express-crud")}`
       )
     );
 
@@ -17,51 +18,72 @@ module.exports = class expressCrud extends Generator {
         type: "input",
         name: "modelFile",
         message:
-          "Introduce el nombre del fichero .yaml que contiene el modelo de datos de todas tus entidades"
+          "Introduce el nombre del fichero .yaml que contiene el modelo de datos de todas tus entidades",
+        default: "model.yaml"
       }
     ]);
     this.appConfig = await this.prompt([
       {
         type: "input",
         name: "port",
-        message: "Introduce el puerto por el que quieres que arranque tu app"
+        message: "Introduce el puerto por el que quieres que arranque tu app",
+        default: 8080
       },
       {
         type: "input",
         name: "mongoUrl",
         when: !this.fs.exists(this.destinationPath("src/database.ts")),
-        message: "Introduce la url de tu base de datos MongoDB"
+        message: "Introduce la url de tu base de datos MongoDB",
+        default: "mongodb://mongo:*****@default:6754/"
       }
     ]);
   }
 
   writing() {
+    // Set the root folder
     this.sourceRoot(
       "node_modules/generator-express-crud/generators/app/templates/"
     );
+
+    // Copy ts standard config
     this.fs.copyTpl(
       this.templatePath("tsconfig.json.txt"),
       this.destinationPath("tsconfig.json")
     );
+    // Copy package standard config
     this.fs.copyTpl(
       this.templatePath("package.json.txt"),
       this.destinationPath("package.json")
     );
+    // Copy ts standard  build config
     this.fs.copyTpl(
       this.templatePath("tsconfig-build.json.txt"),
       this.destinationPath("tsconfig-build.json")
     );
+
+    // Setup the var which will contain all the routers for all entities defined
     var modelRouter = "";
+    // Setup the var which will contain all the imports needed for all entities defined
     var importRouter = "";
+
     try {
+      // Read the yaml model file
       const doc = yaml.load(this.fs.read(this.model.modelFile));
+      // Setup the entities to create
       var entitiesToCreate = Object.keys(doc);
+      // For each entity, we have to copy and construct the templates
       entitiesToCreate.forEach(entity => {
-        var entityKeys = Object.keys(doc[entity]);
+
+        // Get entity attributes
+        var entityAttributes = Object.keys(doc[entity]);
+        // Setup the entity body
         var modelBodyEntity = "";
+        // Setup the schema mongo body
         var modelFieldsMongoSchema = "";
+        
         modelRouter +=
           "app.use('/api', " + entity.toLowerCase() + "Router); \n";
+
         importRouter +=
           "import { " +
           entity.toLowerCase() +
@@ -70,15 +92,21 @@ module.exports = class expressCrud extends Generator {
           "/" +
           entity +
           "Router'; \n";
-        entityKeys.forEach(key => {
+        
+        // For each attribute, construct the entity + mongo schema
+        entityAttributes.forEach(key => {
           modelBodyEntity +=
-            key + ": " + doc[entity][key].toLowerCase() + "; \n";
+            key + ": " + doc[entity][key].toLowerCase() + "; \n\t";
           modelFieldsMongoSchema += key + ": {";
           modelFieldsMongoSchema += "type: " + doc[entity][key] + ",";
           modelFieldsMongoSchema += "required: false";
           modelFieldsMongoSchema += "}, ";
         });
+
+        // Entity name file
         var modelNameFile = entity;
+
+        // Copy repository template and replace
         this.fs.copyTpl(
           this.templatePath("dao/repository/Repository.ejs"),
           this.destinationPath(
@@ -90,6 +118,7 @@ module.exports = class expressCrud extends Generator {
             modelVar: entity.toLowerCase()
           }
         );
+        // Copy dao interface template and replace
         this.fs.copyTpl(
           this.templatePath("interfaces/dao/Dao.ejs"),
           this.destinationPath(
@@ -101,6 +130,7 @@ module.exports = class expressCrud extends Generator {
           }
         );
 
+        // Copy dao implementation template and replace
         this.fs.copyTpl(
           this.templatePath("dao/DaoImpl.ejs"),
           this.destinationPath("src/dao/" + modelNameFile + "DaoImpl.ts"),
@@ -109,6 +139,7 @@ module.exports = class expressCrud extends Generator {
             modelVar: entity.toLowerCase()
           }
         );
+        // Copy model template and replace
         this.fs.copyTpl(
           this.templatePath("models/entities/Model.ejs"),
           this.destinationPath("src/models/entities/" + modelNameFile + ".ts"),
@@ -117,6 +148,7 @@ module.exports = class expressCrud extends Generator {
             modelBody: modelBodyEntity
           }
         );
+        // Copy service interface template and replace
         this.fs.copyTpl(
           this.templatePath("interfaces/service/Service.ejs"),
           this.destinationPath(
@@ -127,6 +159,7 @@ module.exports = class expressCrud extends Generator {
             modelVar: entity.toLowerCase()
           }
         );
+        // Copy service implementation template and replace
         this.fs.copyTpl(
           this.templatePath("service/ServiceImpl.ejs"),
           this.destinationPath(
@@ -137,7 +170,7 @@ module.exports = class expressCrud extends Generator {
             modelVar: entity.toLowerCase()
           }
         );
-
+        // Copy repository implementation template and replace
         this.fs.copyTpl(
           this.templatePath("controllers/controller.ejs"),
           this.destinationPath(
@@ -153,6 +186,7 @@ module.exports = class expressCrud extends Generator {
           }
         );
 
+        // Copy router implementation template and replace
         this.fs.copyTpl(
           this.templatePath("controllers/router.ejs"),
           this.destinationPath(
@@ -170,8 +204,10 @@ module.exports = class expressCrud extends Generator {
       });
     } catch (e) {
       console.log(e);
+      this.cancelCancellableTasks();
     }
 
+    // Copy main index
     this.fs.copyTpl(
       this.templatePath("index.ejs"),
       this.destinationPath("src/index.ts"),
@@ -182,6 +218,7 @@ module.exports = class expressCrud extends Generator {
       }
     );
 
+    // Copy database if not exists
     if (!this.fs.exists(this.destinationPath("src/database.ts"))) {
       this.fs.copyTpl(
         this.templatePath("database.ejs"),
@@ -191,5 +228,9 @@ module.exports = class expressCrud extends Generator {
         }
       );
     }
+  }
+
+  afterWriting() {
+    console.log('afterWriting');
   }
 };
