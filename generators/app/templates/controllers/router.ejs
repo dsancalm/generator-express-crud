@@ -11,22 +11,26 @@ export const <%= modelVar %>Router = express.Router();
 
 const <%= modelVar %>ControllerInstance = Container.get(<%= modelName %>Controller);
 
-<%= modelVar %>Router.post("/save<%= modelName %>", (req, res) => {
+<%= modelVar %>Router.post("/save", (req, res) => {
   <%= modelVar %>ControllerInstance.save<%= modelName %>(req, res);
 });
 
 
-<%= modelVar %>Router.get("/get<%= modelName %>ById", (req, res) => {
+<%= modelVar %>Router.get("/getById", (req, res) => {
   <%= modelVar %>ControllerInstance.get<%= modelName %>ById(req, res);
 });
 
 
+<%= modelVar %>Router.get("/getAll", (req, res) => {
+  <%= modelVar %>ControllerInstance.getAll(req, res);
+});
 
-<%= modelVar %>Router.delete("/delete<%= modelName %>ById", (req, res) => {
+
+<%= modelVar %>Router.delete("/deleteById", (req, res) => {
   <%= modelVar %>ControllerInstance.delete<%= modelName %>ById(req, res);
 });
 
 
-<%= modelVar %>Router.post("/update<%= modelName %>", (req, res) => {
+<%= modelVar %>Router.post("/update", (req, res) => {
   <%= modelVar %>ControllerInstance.update<%= modelName %>(req, res);
 });

@@ -3,6 +3,9 @@ import { <%= modelName %>Repository } from "@repository/<%= modelName %>Reposito
 import I<%= modelName %> from "@models/entities/<%= modelName %>";
 import { Singleton, OnlyInstantiableByContainer } from "typescript-ioc";
 
+/**
+* Dao <%= modelName %>DaoImpl
+*/
 @Singleton
 @OnlyInstantiableByContainer
 export default class <%= modelName %>DaoImpl implements I<%= modelName %>Dao {
@@ -17,6 +20,14 @@ export default class <%= modelName %>DaoImpl implements I<%= modelName %>Dao {
     const res = await <%= modelName %>Repository.findOne({ id<%= modelName %>: id })
       .exec();
     return res ? res.toObject() : Promise.reject();
+  }
+
+  public async getAll(): Promise<I<%= modelName %>[]> {
+    //Do some business logic...
+    const res = await <%= modelName %>Repository.find().exec();
+    return res ? res.map(function (document) {
+      return document.toObject();
+    }) : Promise.reject();
   }
 
   public async update<%= modelName %>(<%= modelVar %>: I<%= modelName %>): Promise<I<%= modelName %>> {

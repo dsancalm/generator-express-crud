@@ -17,7 +17,7 @@ export class <%= modelName %>Controller {
   }
 
   public save<%= modelName %>(req: express.Request, res: express.Response) {
-
+    //Do some business logic...
     const <%= modelVar %>: I<%= modelName %> = req.body.<%= modelVar %> as I<%= modelName %>;
     this.<%= modelVar %>Service
       .save<%= modelName %>(<%= modelVar %>)
@@ -30,9 +30,23 @@ export class <%= modelName %>Controller {
   }
 
   public get<%= modelName %>ById(req: express.Request, res: express.Response) {
+    //Do some business logic...
     const id: string = req.query.id as string;
     this.<%= modelVar %>Service
       .get<%= modelName %>ById(id)
+      .then((respuestaService) => {
+        res.status(200).send(respuestaService);
+      })
+      .catch((respuestaService) => {
+        res.status(404).send(respuestaService);
+      });
+  }
+
+  public getAll(_req: express.Request, res: express.Response) {
+
+    //Do some business logic...
+    this.<%= modelVar %>Service
+      .getAll()
       .then((respuestaService) => {
         res.status(200).send(respuestaService);
       })
@@ -54,6 +68,8 @@ export class <%= modelName %>Controller {
   }
 
   public update<%= modelName %>(req: express.Request, res: express.Response) {
+
+    //Do some business logic...
     const <%= modelVar %>: I<%= modelName %> = req.body.<%= modelVar %> as I<%= modelName %>;
     this.<%= modelVar %>Service
       .update<%= modelName %>(<%= modelVar %>)

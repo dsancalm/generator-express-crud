@@ -10,8 +10,14 @@ const port = <%= port %>; // default port to listen
 
 <%- modelRouter %>
 
-database();
-
-app.listen(port, () => {
-    console.log(`Server started at http://localhost:${port}`);
-});
+database()
+  .then(() => {
+    console.log("connected to database");
+    app.listen(port, () => {
+      console.log(`Server started at http://localhost:${port}`);
+    });
+  })
+  .catch((err) => {
+    console.log(err);
+    throw new Error(err);
+  });

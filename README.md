@@ -56,12 +56,6 @@ found 0 vulnerabilities
 
 Model.yaml to generate your app example:
 ```YAML
-
-Perro:
-  nombre : String
-  raza: String
-  edad: Number
-  peso: String
 Alumno: 
   nombre : String
   apellidos: String

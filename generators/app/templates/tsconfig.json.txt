@@ -6,7 +6,7 @@
     "lib": ["ES2021.String"],
     "noImplicitAny": true,
     "moduleResolution": "node",
-    "types": ["reflect-metadata", "jest", "chai"],
+    "types": ["reflect-metadata", "jest"],
     "sourceMap": true,
     "outDir": "dist",
     "baseUrl": "./",
