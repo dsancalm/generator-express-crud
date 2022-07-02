@@ -4,6 +4,15 @@ const Generator = require("yeoman-generator");
 const chalk = require("chalk");
 const yosay = require("yosay");
 const yaml = require("js-yaml");
+const primitives = [
+  "string",
+  "number",
+  "bigint",
+  "boolean",
+  "symbol",
+  "undefined"
+];
+
 
 module.exports = class expressCrud extends Generator {
   async prompting() {
@@ -43,7 +52,8 @@ module.exports = class expressCrud extends Generator {
 
     // Read the yaml model file
     const doc = yaml.load(this.fs.read(this.model.modelFile));
-    // Setup the entities to create
+
+    // Check if exists keys
     let keys = Object.keys(doc);
     if (keys.length === 0) {
       throw new SyntaxError(
@@ -51,21 +61,31 @@ module.exports = class expressCrud extends Generator {
       );
     }
 
-    // For each entity, we have to copy and construct the templates
-    keys.forEach(entity => {
-      // Get entity attributes
-      let childKeys = Object.keys(doc[entity]);
+    // Check for each key
+    keys.forEach(key => {
+      // Check the if exists at least 1 child key
+      let childKeys = Object.keys(doc[key]);
       if (childKeys.length === 0) {
         throw new SyntaxError(
           "File " + this.model.modelFile + " not have any childKeys defined"
         );
       }
 
-      const primitives = ["string" , "number" , "bigint" , "boolean" , "symbol" , "undefined"];
+      // For each childKey check...
       childKeys.forEach(childKey => {
+
+        // The type of child key is string (Not a number, not a symbol, not a complex type...)
+        if (typeof doc[key][childKey] !== "string") {
+          throw new SyntaxError(
+            "File " + this.model.modelFile + " has childKeys with complex types"
+          );
+        }
+
+
         const containsString = primitives.some(element => {
-          return element.toLowerCase() === doc[keys][childKey].toLowerCase();
+          return element.toLowerCase() === doc[key][childKey].toLowerCase();
         });
+        // Check if child key is a primitive
         if (!containsString) {
           throw new SyntaxError(
             "File " +
