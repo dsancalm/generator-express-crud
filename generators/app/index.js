@@ -4,14 +4,7 @@ const Generator = require("yeoman-generator");
 const chalk = require("chalk");
 const yosay = require("yosay");
 const yaml = require("js-yaml");
-const primitives = [
-  "string",
-  "number",
-  "bigint",
-  "boolean",
-  "symbol",
-  "undefined"
-];
+const { default: validate } = require("./validate");
 
 
 module.exports = class expressCrud extends Generator {
@@ -44,64 +37,16 @@ module.exports = class expressCrud extends Generator {
     ]);
   }
 
-  // Validate model
+  
   beforeWriting() {
-    if (!this.fs.exists(this.model.modelFile)) {
-      throw new ReferenceError("File " + this.model.modelFile + " not exist");
-    }
 
-    // Read the yaml model file
-    const doc = yaml.load(this.fs.read(this.model.modelFile));
-
-    // Check if exists keys
-    let keys = Object.keys(doc);
-    if (keys.length === 0) {
-      throw new SyntaxError(
-        "File " + this.model.modelFile + " not have any keys defined"
-      );
-    }
-
-    // Check for each key
-    keys.forEach(key => {
-      // Check the if exists at least 1 child key
-      let childKeys = Object.keys(doc[key]);
-      if (childKeys.length === 0) {
-        throw new SyntaxError(
-          "File " + this.model.modelFile + " not have any childKeys defined"
-        );
-      }
-
-      // For each childKey check...
-      childKeys.forEach(childKey => {
-
-        // The type of child key is string (Not a number, not a symbol, not a complex type...)
-        if (typeof doc[key][childKey] !== "string") {
-          throw new SyntaxError(
-            "File " + this.model.modelFile + " has childKeys with complex types"
-          );
-        }
-
-
-        const containsString = primitives.some(element => {
-          return element.toLowerCase() === doc[key][childKey].toLowerCase();
-        });
-        // Check if child key is a primitive
-        if (!containsString) {
-          throw new SyntaxError(
-            "File " +
-              this.model.modelFile +
-              " has childKeys value with unknown primitive types"
-          );
-        }
-      });
-    });
+    // Validate model
+    validate(this.model.modelFile);
   }
 
   writing() {
     // Set the root folder
-    this.sourceRoot(
-      "node_modules/generator-express-crud/generators/app/templates/"
-    );
+    this.sourceRoot("node_modules/generator-express-crud/generators/app/templates/");
 
     // Copy ts standard config
     this.fs.copyTpl(
@@ -137,21 +82,9 @@ module.exports = class expressCrud extends Generator {
       // Setup the schema mongo body
       let modelFieldsMongoSchema = "";
 
-      modelRouter +=
-        "app.use('/" +
-        entity.toLowerCase() +
-        "', " +
-        entity.toLowerCase() +
-        "Router); \n";
+      modelRouter += "app.use('/" + entity.toLowerCase() + "', " + entity.toLowerCase() + "Router); \n";
 
-      importRouter +=
-        "import { " +
-        entity.toLowerCase() +
-        "Router } from '@controllers/" +
-        entity +
-        "/" +
-        entity +
-        "Router'; \n";
+      importRouter += "import { " + entity.toLowerCase() + "Router } from '@controllers/" + entity + "/" + entity + "Router'; \n";
 
       // For each attribute, construct the entity + mongo schema
       entityAttributes.forEach(key => {
@@ -286,41 +219,11 @@ module.exports = class expressCrud extends Generator {
     // For each entity, we have to copy and construct the templates
     entitiesToCreate.forEach(entity => {
       console.log("Entity: " + entity);
-      console.log(
-        "http://localhost:" +
-          this.appConfig.port +
-          "/" +
-          entity.toLowerCase() +
-          "/save"
-      );
-      console.log(
-        "http://localhost:" +
-          this.appConfig.port +
-          "/" +
-          entity.toLowerCase() +
-          "/getById"
-      );
-      console.log(
-        "http://localhost:" +
-          this.appConfig.port +
-          "/" +
-          entity.toLowerCase() +
-          "/getAll"
-      );
-      console.log(
-        "http://localhost:" +
-          this.appConfig.port +
-          "/" +
-          entity.toLowerCase() +
-          "/deleteById"
-      );
-      console.log(
-        "http://localhost:" +
-          this.appConfig.port +
-          "/" +
-          entity.toLowerCase() +
-          "/update \n"
-      );
+      console.log("http://localhost:" + this.appConfig.port + "/" +entity.toLowerCase() + "/save");
+      console.log("http://localhost:" + this.appConfig.port + "/" +entity.toLowerCase() + "/getById");
+      console.log("http://localhost:" + this.appConfig.port + "/" +entity.toLowerCase() + "/getAll");
+      console.log("http://localhost:" + this.appConfig.port + "/" +entity.toLowerCase() + "/deleteById");
+      console.log("http://localhost:" + this.appConfig.port + "/" +entity.toLowerCase() + "/update \n");
     });
   }
 };
