@@ -82,7 +82,7 @@ module.exports = class expressCrud extends Generator {
         var modelFieldsMongoSchema = "";
         
         modelRouter +=
-          "app.use('/api', " + entity.toLowerCase() + "Router); \n";
+          "app.use('/"+ entity.toLowerCase() + "', " + entity.toLowerCase() + "Router); \n";
 
         importRouter +=
           "import { " +
