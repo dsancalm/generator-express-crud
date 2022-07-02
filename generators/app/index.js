@@ -7,11 +7,7 @@ const yaml = require("js-yaml");
 
 module.exports = class expressCrud extends Generator {
   async prompting() {
-    this.log(
-      yosay(
-        `${chalk.red("generator-express-crud")}`
-      )
-    );
+    this.log(yosay(`${chalk.red("generator-express-crud")}`));
 
     this.model = await this.prompt([
       {
@@ -73,16 +69,19 @@ module.exports = class expressCrud extends Generator {
       var entitiesToCreate = Object.keys(doc);
       // For each entity, we have to copy and construct the templates
       entitiesToCreate.forEach(entity => {
-
         // Get entity attributes
         var entityAttributes = Object.keys(doc[entity]);
         // Setup the entity body
         var modelBodyEntity = "";
         // Setup the schema mongo body
         var modelFieldsMongoSchema = "";
-        
+
         modelRouter +=
-          "app.use('/"+ entity.toLowerCase() + "', " + entity.toLowerCase() + "Router); \n";
+          "app.use('/" +
+          entity.toLowerCase() +
+          "', " +
+          entity.toLowerCase() +
+          "Router); \n";
 
         importRouter +=
           "import { " +
@@ -92,7 +91,7 @@ module.exports = class expressCrud extends Generator {
           "/" +
           entity +
           "Router'; \n";
-        
+
         // For each attribute, construct the entity + mongo schema
         entityAttributes.forEach(key => {
           modelBodyEntity +=
@@ -231,6 +230,19 @@ module.exports = class expressCrud extends Generator {
   }
 
   afterWriting() {
-    console.log('afterWriting');
+    console.log("API Generated: \n");
+    // Read the yaml model file
+    const doc = yaml.load(this.fs.read(this.model.modelFile));
+    // Setup the entities to create
+    var entitiesToCreate = Object.keys(doc);
+    // For each entity, we have to copy and construct the templates
+    entitiesToCreate.forEach(entity => {
+      console.log("Entity: " + entity);
+      console.log("http://localhost:"+ this.appConfig.port +"/" + entity.toLowerCase() + "/save");
+      console.log("http://localhost:"+ this.appConfig.port +"/" + entity.toLowerCase() + "/getById");
+      console.log("http://localhost:"+ this.appConfig.port +"/" + entity.toLowerCase() + "/getAll");
+      console.log("http://localhost:"+ this.appConfig.port +"/" + entity.toLowerCase() + "/deleteById");
+      console.log("http://localhost:"+ this.appConfig.port +"/" + entity.toLowerCase() + "/update \n");
+    });
   }
 };
