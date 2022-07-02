@@ -1,6 +1,6 @@
 {
   "name": "generator-express-crud",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "description": "A NPX tool that allows to the developer to deploy fast backend apps only passing a few arguments, like the port, url database or entity model in yaml format",
   "homepage": "https://github.com/dsancalm/generator-express-crud",
   "author": {
