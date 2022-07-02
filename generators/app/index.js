@@ -39,9 +39,15 @@ module.exports = class expressCrud extends Generator {
 
   
   beforeWriting() {
-
+    
+    if (!this.fs.exists(this.model.modelFile)) {
+      throw new ReferenceError("File " + this.model.modelFile + " not exist");
+    }
+  
+    // Read the yaml model file
+    const doc = yaml.load(this.fs.read(this.model.modelFile));
     // Validate model
-    validate(this.model.modelFile);
+    validate(this.model.modelFile, doc);
   }
 
   writing() {

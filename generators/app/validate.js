@@ -1,14 +1,6 @@
-const yaml = require("js-yaml");
 const primitives = ["string", "number", "bigint", "boolean", "symbol"];
 // eslint-disable-next-line func-names
-module.exports = function validate(modelFile) {
-  if (!this.fs.exists(modelFile)) {
-    throw new ReferenceError("File " + modelFile + " not exist");
-  }
-
-  // Read the yaml model file
-  const doc = yaml.load(this.fs.read(modelFile));
-
+module.exports = function validate(modelFile, doc) {
   // Check if exists keys
   let keys = Object.keys(doc);
   if (keys.length === 0) {
