@@ -32,6 +32,17 @@ export class <%= modelName %>ServiceImpl implements I<%= modelName %>Service {
     }
   }
 
+
+  public async getAll(): Promise<I<%= modelName %>[]> {
+    //Do some business logic...
+    try {
+      return await this.<%= modelVar %>Dao
+        .getAll();
+    } catch {
+      return Promise.reject();
+    }
+  }
+
   public async update<%= modelName %>(<%= modelVar %>: I<%= modelName %>): Promise<I<%= modelName %>> {
     //Do some business logic...
     try {

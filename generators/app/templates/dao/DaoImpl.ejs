@@ -22,6 +22,14 @@ export default class <%= modelName %>DaoImpl implements I<%= modelName %>Dao {
     return res ? res.toObject() : Promise.reject();
   }
 
+  public async getAll(): Promise<I<%= modelName %>[]> {
+    //Do some business logic...
+    const res = await <%= modelName %>Repository.find().exec();
+    return res ? res.map(function (document) {
+      return document.toObject();
+    }) : Promise.reject();
+  }
+
   public async update<%= modelName %>(<%= modelVar %>: I<%= modelName %>): Promise<I<%= modelName %>> {
     //Do some business logic...
     const res = await <%= modelName %>Repository.findOneAndUpdate({ id<%= modelName %>: <%= modelVar %>.id<%= modelName %> }, <%= modelVar %>, {

@@ -21,6 +21,10 @@ const <%= modelVar %>ControllerInstance = Container.get(<%= modelName %>Controll
 });
 
 
+<%= modelVar %>Router.getAll("/getAll", (req, res) => {
+  <%= modelVar %>ControllerInstance.getAll(req, res);
+});
+
 
 <%= modelVar %>Router.delete("/delete<%= modelName %>ById", (req, res) => {
   <%= modelVar %>ControllerInstance.delete<%= modelName %>ById(req, res);

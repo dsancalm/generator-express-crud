@@ -18,7 +18,7 @@ module.exports = class expressCrud extends Generator {
         type: "input",
         name: "modelFile",
         message:
-          "Introduce el nombre del fichero .yaml que contiene el modelo de datos de todas tus entidades",
+          "Insert you model .yaml filename that contains your data model business: ",
         default: "model.yaml"
       }
     ]);
@@ -26,14 +26,14 @@ module.exports = class expressCrud extends Generator {
       {
         type: "input",
         name: "port",
-        message: "Introduce el puerto por el que quieres que arranque tu app",
+        message: "Insert the port where you want to startup your app: ",
         default: 8080
       },
       {
         type: "input",
         name: "mongoUrl",
         when: !this.fs.exists(this.destinationPath("src/database.ts")),
-        message: "Introduce la url de tu base de datos MongoDB",
+        message: "Insert your URL MongoDB database: ",
         default: "mongodb://mongo:*****@default:6754/"
       }
     ]);
