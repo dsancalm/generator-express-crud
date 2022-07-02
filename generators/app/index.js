@@ -4,7 +4,7 @@ const Generator = require("yeoman-generator");
 const chalk = require("chalk");
 const yosay = require("yosay");
 const yaml = require("js-yaml");
-const { default: validate } = require("./validate");
+const validate = require("./validate");
 
 
 module.exports = class expressCrud extends Generator {

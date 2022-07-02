@@ -1,6 +1,7 @@
 const yaml = require("js-yaml");
 const primitives = ["string", "number", "bigint", "boolean", "symbol"];
-export default function validate(modelFile) {
+// eslint-disable-next-line func-names
+module.exports = function validate(modelFile) {
   if (!this.fs.exists(modelFile)) {
     throw new ReferenceError("File " + modelFile + " not exist");
   }
@@ -46,4 +47,4 @@ export default function validate(modelFile) {
       }
     });
   });
-}
+};
