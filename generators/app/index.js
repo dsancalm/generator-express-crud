@@ -35,6 +35,48 @@ module.exports = class expressCrud extends Generator {
     ]);
   }
 
+  // Validate model
+  beforeWriting() {
+    if (!this.fs.exists(this.model.modelFile)) {
+      throw new ReferenceError("File " + this.model.modelFile + " not exist");
+    }
+
+    // Read the yaml model file
+    const doc = yaml.load(this.fs.read(this.model.modelFile));
+    // Setup the entities to create
+    let keys = Object.keys(doc);
+    if (keys.length === 0) {
+      throw new SyntaxError(
+        "File " + this.model.modelFile + " not have any keys defined"
+      );
+    }
+
+    // For each entity, we have to copy and construct the templates
+    keys.forEach(entity => {
+      // Get entity attributes
+      let childKeys = Object.keys(doc[entity]);
+      if (childKeys.length === 0) {
+        throw new SyntaxError(
+          "File " + this.model.modelFile + " not have any childKeys defined"
+        );
+      }
+
+      const primitives = ["string" , "number" , "bigint" , "boolean" , "symbol" , "undefined"];
+      childKeys.forEach(childKey => {
+        const containsString = primitives.some(element => {
+          return element.toLowerCase() === doc[keys][childKey].toLowerCase();
+        });
+        if (!containsString) {
+          throw new SyntaxError(
+            "File " +
+              this.model.modelFile +
+              " has childKeys value with unknown primitive types"
+          );
+        }
+      });
+    });
+  }
+
   writing() {
     // Set the root folder
     this.sourceRoot(
@@ -57,155 +99,141 @@ module.exports = class expressCrud extends Generator {
       this.destinationPath("tsconfig-build.json")
     );
 
-    // Setup the var which will contain all the routers for all entities defined
-    var modelRouter = "";
-    // Setup the var which will contain all the imports needed for all entities defined
-    var importRouter = "";
+    // Setup the variable which will contain all the routers for all entities defined
+    let modelRouter = "";
+    // Setup the variable which will contain all the imports needed for all entities defined
+    let importRouter = "";
 
-    try {
-      // Read the yaml model file
-      const doc = yaml.load(this.fs.read(this.model.modelFile));
-      // Setup the entities to create
-      var entitiesToCreate = Object.keys(doc);
-      // For each entity, we have to copy and construct the templates
-      entitiesToCreate.forEach(entity => {
-        // Get entity attributes
-        var entityAttributes = Object.keys(doc[entity]);
-        // Setup the entity body
-        var modelBodyEntity = "";
-        // Setup the schema mongo body
-        var modelFieldsMongoSchema = "";
+    // Read the yaml model file
+    const doc = yaml.load(this.fs.read(this.model.modelFile));
+    // Setup the entities to create
+    let entitiesToCreate = Object.keys(doc);
+    // For each entity, we have to copy and construct the templates
+    entitiesToCreate.forEach(entity => {
+      // Get entity attributes
+      let entityAttributes = Object.keys(doc[entity]);
+      // Setup the entity body
+      let modelBodyEntity = "";
+      // Setup the schema mongo body
+      let modelFieldsMongoSchema = "";
 
-        modelRouter +=
-          "app.use('/" +
-          entity.toLowerCase() +
-          "', " +
-          entity.toLowerCase() +
-          "Router); \n";
+      modelRouter +=
+        "app.use('/" +
+        entity.toLowerCase() +
+        "', " +
+        entity.toLowerCase() +
+        "Router); \n";
 
-        importRouter +=
-          "import { " +
-          entity.toLowerCase() +
-          "Router } from '@controllers/" +
-          entity +
-          "/" +
-          entity +
-          "Router'; \n";
+      importRouter +=
+        "import { " +
+        entity.toLowerCase() +
+        "Router } from '@controllers/" +
+        entity +
+        "/" +
+        entity +
+        "Router'; \n";
 
-        // For each attribute, construct the entity + mongo schema
-        entityAttributes.forEach(key => {
-          modelBodyEntity +=
-            key + ": " + doc[entity][key].toLowerCase() + "; \n\t";
-          modelFieldsMongoSchema += key + ": {";
-          modelFieldsMongoSchema += "type: " + doc[entity][key] + ",";
-          modelFieldsMongoSchema += "required: false";
-          modelFieldsMongoSchema += "}, ";
-        });
-
-        // Entity name file
-        var modelNameFile = entity;
-
-        // Copy repository template and replace
-        this.fs.copyTpl(
-          this.templatePath("dao/repository/Repository.ejs"),
-          this.destinationPath(
-            "src/dao/repository/" + modelNameFile + "Repository.ts"
-          ),
-          {
-            modelName: entity,
-            modelFields: modelFieldsMongoSchema,
-            modelVar: entity.toLowerCase()
-          }
-        );
-        // Copy dao interface template and replace
-        this.fs.copyTpl(
-          this.templatePath("interfaces/dao/Dao.ejs"),
-          this.destinationPath(
-            "src/interfaces/dao/I" + modelNameFile + "Dao.ts"
-          ),
-          {
-            modelName: entity,
-            modelVar: entity.toLowerCase()
-          }
-        );
-
-        // Copy dao implementation template and replace
-        this.fs.copyTpl(
-          this.templatePath("dao/DaoImpl.ejs"),
-          this.destinationPath("src/dao/" + modelNameFile + "DaoImpl.ts"),
-          {
-            modelName: entity,
-            modelVar: entity.toLowerCase()
-          }
-        );
-        // Copy model template and replace
-        this.fs.copyTpl(
-          this.templatePath("models/entities/Model.ejs"),
-          this.destinationPath("src/models/entities/" + modelNameFile + ".ts"),
-          {
-            modelName: entity,
-            modelBody: modelBodyEntity
-          }
-        );
-        // Copy service interface template and replace
-        this.fs.copyTpl(
-          this.templatePath("interfaces/service/Service.ejs"),
-          this.destinationPath(
-            "src/interfaces/service/I" + modelNameFile + "Service.ts"
-          ),
-          {
-            modelName: entity,
-            modelVar: entity.toLowerCase()
-          }
-        );
-        // Copy service implementation template and replace
-        this.fs.copyTpl(
-          this.templatePath("service/ServiceImpl.ejs"),
-          this.destinationPath(
-            "src/service/" + modelNameFile + "ServiceImpl.ts"
-          ),
-          {
-            modelName: entity,
-            modelVar: entity.toLowerCase()
-          }
-        );
-        // Copy repository implementation template and replace
-        this.fs.copyTpl(
-          this.templatePath("controllers/controller.ejs"),
-          this.destinationPath(
-            "src/controllers/" +
-              modelNameFile +
-              "/" +
-              modelNameFile +
-              "Controller.ts"
-          ),
-          {
-            modelName: entity,
-            modelVar: entity.toLowerCase()
-          }
-        );
-
-        // Copy router implementation template and replace
-        this.fs.copyTpl(
-          this.templatePath("controllers/router.ejs"),
-          this.destinationPath(
-            "src/controllers/" +
-              modelNameFile +
-              "/" +
-              modelNameFile +
-              "Router.ts"
-          ),
-          {
-            modelName: entity,
-            modelVar: entity.toLowerCase()
-          }
-        );
+      // For each attribute, construct the entity + mongo schema
+      entityAttributes.forEach(key => {
+        modelBodyEntity +=
+          key + ": " + doc[entity][key].toLowerCase() + "; \n\t";
+        modelFieldsMongoSchema += key + ": {";
+        modelFieldsMongoSchema += "type: " + doc[entity][key] + ",";
+        modelFieldsMongoSchema += "required: false";
+        modelFieldsMongoSchema += "}, \n\t";
       });
-    } catch (e) {
-      console.log(e);
-      this.cancelCancellableTasks();
-    }
 
+      // Entity name file
+      let modelNameFile = entity;
+
+      // Copy repository template and replace
+      this.fs.copyTpl(
+        this.templatePath("dao/repository/Repository.ejs"),
+        this.destinationPath(
+          "src/dao/repository/" + modelNameFile + "Repository.ts"
+        ),
+        {
+          modelName: entity,
+          modelFields: modelFieldsMongoSchema,
+          modelVar: entity.toLowerCase()
+        }
+      );
+      // Copy dao interface template and replace
+      this.fs.copyTpl(
+        this.templatePath("interfaces/dao/Dao.ejs"),
+        this.destinationPath("src/interfaces/dao/I" + modelNameFile + "Dao.ts"),
+        {
+          modelName: entity,
+          modelVar: entity.toLowerCase()
+        }
+      );
+
+      // Copy dao implementation template and replace
+      this.fs.copyTpl(
+        this.templatePath("dao/DaoImpl.ejs"),
+        this.destinationPath("src/dao/" + modelNameFile + "DaoImpl.ts"),
+        {
+          modelName: entity,
+          modelVar: entity.toLowerCase()
+        }
+      );
+      // Copy model template and replace
+      this.fs.copyTpl(
+        this.templatePath("models/entities/Model.ejs"),
+        this.destinationPath("src/models/entities/" + modelNameFile + ".ts"),
+        {
+          modelName: entity,
+          modelBody: modelBodyEntity
+        }
+      );
+      // Copy service interface template and replace
+      this.fs.copyTpl(
+        this.templatePath("interfaces/service/Service.ejs"),
+        this.destinationPath(
+          "src/interfaces/service/I" + modelNameFile + "Service.ts"
+        ),
+        {
+          modelName: entity,
+          modelVar: entity.toLowerCase()
+        }
+      );
+      // Copy service implementation template and replace
+      this.fs.copyTpl(
+        this.templatePath("service/ServiceImpl.ejs"),
+        this.destinationPath("src/service/" + modelNameFile + "ServiceImpl.ts"),
+        {
+          modelName: entity,
+          modelVar: entity.toLowerCase()
+        }
+      );
+      // Copy repository implementation template and replace
+      this.fs.copyTpl(
+        this.templatePath("controllers/controller.ejs"),
+        this.destinationPath(
+          "src/controllers/" +
+            modelNameFile +
+            "/" +
+            modelNameFile +
+            "Controller.ts"
+        ),
+        {
+          modelName: entity,
+          modelVar: entity.toLowerCase()
+        }
+      );
+
+      // Copy router implementation template and replace
+      this.fs.copyTpl(
+        this.templatePath("controllers/router.ejs"),
+        this.destinationPath(
+          "src/controllers/" + modelNameFile + "/" + modelNameFile + "Router.ts"
+        ),
+        {
+          modelName: entity,
+          modelVar: entity.toLowerCase()
+        }
+      );
+    });
     // Copy main index
     this.fs.copyTpl(
       this.templatePath("index.ejs"),
@@ -234,15 +262,45 @@ module.exports = class expressCrud extends Generator {
     // Read the yaml model file
     const doc = yaml.load(this.fs.read(this.model.modelFile));
     // Setup the entities to create
-    var entitiesToCreate = Object.keys(doc);
+    let entitiesToCreate = Object.keys(doc);
     // For each entity, we have to copy and construct the templates
     entitiesToCreate.forEach(entity => {
       console.log("Entity: " + entity);
-      console.log("http://localhost:"+ this.appConfig.port +"/" + entity.toLowerCase() + "/save");
-      console.log("http://localhost:"+ this.appConfig.port +"/" + entity.toLowerCase() + "/getById");
-      console.log("http://localhost:"+ this.appConfig.port +"/" + entity.toLowerCase() + "/getAll");
-      console.log("http://localhost:"+ this.appConfig.port +"/" + entity.toLowerCase() + "/deleteById");
-      console.log("http://localhost:"+ this.appConfig.port +"/" + entity.toLowerCase() + "/update \n");
+      console.log(
+        "http://localhost:" +
+          this.appConfig.port +
+          "/" +
+          entity.toLowerCase() +
+          "/save"
+      );
+      console.log(
+        "http://localhost:" +
+          this.appConfig.port +
+          "/" +
+          entity.toLowerCase() +
+          "/getById"
+      );
+      console.log(
+        "http://localhost:" +
+          this.appConfig.port +
+          "/" +
+          entity.toLowerCase() +
+          "/getAll"
+      );
+      console.log(
+        "http://localhost:" +
+          this.appConfig.port +
+          "/" +
+          entity.toLowerCase() +
+          "/deleteById"
+      );
+      console.log(
+        "http://localhost:" +
+          this.appConfig.port +
+          "/" +
+          entity.toLowerCase() +
+          "/update \n"
+      );
     });
   }
 };
