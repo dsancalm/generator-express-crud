@@ -74,6 +74,12 @@ module.exports = class expressCrud extends Generator {
       this.destinationPath("tsoa.json")
     );
 
+    // Copy nodemon standard  build config
+    this.fs.copyTpl(
+      this.templatePath("nodemon.json.txt"),
+      this.destinationPath("nodemon.json")
+    );
+
     // Copy ioc config
     this.fs.copyTpl(
       this.templatePath("ioc/ioc.ts"),
