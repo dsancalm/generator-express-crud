@@ -1,13 +1,12 @@
 import I<%= modelName %>Dao from "@interfaces/dao/I<%= modelName %>Dao";
 import { <%= modelName %>Repository } from "@repository/<%= modelName %>Repository";
 import I<%= modelName %> from "@models/entities/<%= modelName %>";
-import { Singleton, OnlyInstantiableByContainer } from "typescript-ioc";
+import { ProvideSingleton } from '@ioc/ioc';
 
 /**
 * Dao <%= modelName %>DaoImpl
 */
-@Singleton
-@OnlyInstantiableByContainer
+@ProvideSingleton(<%= modelName %>DaoImpl)
 export default class <%= modelName %>DaoImpl implements I<%= modelName %>Dao {
   public async save<%= modelName %>(<%= modelVar %>: I<%= modelName %>): Promise<I<%= modelName %>> {
     //Do some business logic...
