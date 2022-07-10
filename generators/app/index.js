@@ -75,10 +75,8 @@ module.exports = class expressCrud extends Generator {
       this.destinationPath("src/ioc/ioc.ts")
     );
 
-    // Setup the variable which will contain all the routers for all entities defined
-    let modelRouter = "";
     // Setup the variable which will contain all the imports needed for all entities defined
-    let importRouter = "";
+    let importController = "";
 
     // Read the yaml model file
     const doc = yaml.load(this.fs.read(this.model.modelFile));
@@ -93,21 +91,8 @@ module.exports = class expressCrud extends Generator {
       // Setup the schema mongo body
       let modelFieldsMongoSchema = "";
 
-      modelRouter +=
-        "app.use('/" +
-        entity.toLowerCase() +
-        "', " +
-        entity.toLowerCase() +
-        "Router); \n";
-
-      importRouter +=
-        "import { " +
-        entity.toLowerCase() +
-        "Router } from '@controllers/" +
-        entity +
-        "/" +
-        entity +
-        "Router'; \n";
+      importController +=
+        "import '@controllers/" + entity + "/" + entity + "Controller'; \n";
 
       // For each attribute, construct the entity + mongo schema
       entityAttributes.forEach((key) => {
@@ -216,8 +201,7 @@ module.exports = class expressCrud extends Generator {
       this.destinationPath("src/index.ts"),
       {
         port: this.appConfig.port,
-        modelRouter: modelRouter,
-        importRouter: importRouter,
+        importController: importController,
       }
     );
 

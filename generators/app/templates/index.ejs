@@ -1,14 +1,22 @@
 import 'module-alias/register';
 import express from 'express';
-<%- importRouter %>
+<%- importController %>
 import { database } from './database';
-
+import { RegisterRoutes } from './routes';
+import * as swaggerUi from 'swagger-ui-express';
 
 const app = express();
 app.use(express.json());
 const port = <%= port %>; // default port to listen
 
-<%- modelRouter %>
+try {
+	const swaggerDocument = require('../swagger.json');
+	app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+} catch (error) {
+	console.error('swagger error', error);
+}
+
+RegisterRoutes(app);
 
 database()
   .then(() => {
