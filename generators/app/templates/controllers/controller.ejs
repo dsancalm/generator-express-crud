@@ -11,7 +11,7 @@ import { ProvideSingleton, inject } from '@ioc/ioc';
 @ProvideSingleton(<%= modelName %>Controller)
 export class <%= modelName %>Controller extends Controller {
 
-  constructor(@inject(<%= modelName %>ServiceImpl) private userService: I<%= modelName %>Service) {
+  constructor(@inject(<%= modelName %>ServiceImpl) private <%= modelVar %>Service: I<%= modelName %>Service) {
 		super();
 	}
 
@@ -38,7 +38,7 @@ export class <%= modelName %>Controller extends Controller {
 
 
   @Get('/getAll')
-  public async getAll(): Promise<I<%= modelName %>>  {
+  public async getAll(): Promise<I<%= modelName %>[]>  {
     //Do some business logic...
     try {
       return await this.<%= modelVar %>Service.getAll();
