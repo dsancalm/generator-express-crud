@@ -18,7 +18,8 @@
       "@interfaces/*": ["./src/interfaces/*"],
       "@dao/*": ["./src/dao/*"],
       "@common/*": ["./src/common/*"],
-      "@repository/*": ["./src/dao/repository/*"]
+      "@repository/*": ["./src/dao/repository/*"],
+      "@ioc/*": ["./src/ioc/*"]
     },
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,

@@ -68,6 +68,11 @@ module.exports = class expressCrud extends Generator {
       this.templatePath("tsconfig-build.json.txt"),
       this.destinationPath("tsconfig-build.json")
     );
+    // Copy tsoa standard  build config
+    this.fs.copyTpl(
+      this.templatePath("tsoa.json.txt"),
+      this.destinationPath("tsoa.json")
+    );
 
     // Copy ioc config
     this.fs.copyTpl(
