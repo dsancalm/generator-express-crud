@@ -187,18 +187,6 @@ module.exports = class expressCrud extends Generator {
           modelVar: entity.toLowerCase(),
         }
       );
-
-      // Copy router implementation template and replace
-      this.fs.copyTpl(
-        this.templatePath("controllers/router.ejs"),
-        this.destinationPath(
-          "src/controllers/" + modelNameFile + "/" + modelNameFile + "Router.ts"
-        ),
-        {
-          modelName: entity,
-          modelVar: entity.toLowerCase(),
-        }
-      );
     });
     // Copy main index
     this.fs.copyTpl(
