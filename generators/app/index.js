@@ -194,6 +194,18 @@ module.exports = class expressCrud extends Generator {
         }
       );
     });
+
+    // Copy standard exception classes
+    this.fs.copyTpl(
+      this.templatePath("common/exception/DaoError.ejs"),
+      this.destinationPath("src/common/exception/DaoError.ts")
+    );
+
+    this.fs.copyTpl(
+      this.templatePath("common/exception/ServiceError.ejs"),
+      this.destinationPath("src/common/exception/ServiceError.ts")
+    );
+
     // Copy main index
     this.fs.copyTpl(
       this.templatePath("index.ejs"),
@@ -217,49 +229,9 @@ module.exports = class expressCrud extends Generator {
   }
 
   afterWriting() {
-    console.log("API Generated: \n");
-    // Read the yaml model file
-    const doc = yaml.load(this.fs.read(this.model.modelFile));
-    // Setup the entities to create
-    let entitiesToCreate = Object.keys(doc);
-    // For each entity, we have to copy and construct the templates
-    entitiesToCreate.forEach((entity) => {
-      console.log("Entity: " + entity);
-      console.log(
-        "http://localhost:" +
-          this.appConfig.port +
-          "/" +
-          entity.toLowerCase() +
-          "/save"
-      );
-      console.log(
-        "http://localhost:" +
-          this.appConfig.port +
-          "/" +
-          entity.toLowerCase() +
-          "/getById"
-      );
-      console.log(
-        "http://localhost:" +
-          this.appConfig.port +
-          "/" +
-          entity.toLowerCase() +
-          "/getAll"
-      );
-      console.log(
-        "http://localhost:" +
-          this.appConfig.port +
-          "/" +
-          entity.toLowerCase() +
-          "/deleteById"
-      );
-      console.log(
-        "http://localhost:" +
-          this.appConfig.port +
-          "/" +
-          entity.toLowerCase() +
-          "/update \n"
-      );
-    });
+    console.log("Documentation API Generated via Swagger");
+    console.log(
+      `You can check it by executing 'npm run dev' and checking http://localhost:${this.appConfig.port}/docs`
+    );
   }
 };
