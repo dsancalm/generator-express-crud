@@ -2,6 +2,8 @@ import I<%= modelName %>Dao from "@interfaces/dao/I<%= modelName %>Dao";
 import { <%= modelName %>Repository } from "@repository/<%= modelName %>Repository";
 import I<%= modelName %> from "@models/entities/<%= modelName %>";
 import { ProvideSingleton } from '@ioc/ioc';
+import mongoose from 'mongoose';
+import DaoError from '@common/exception/DaoError';
 
 /**
 * Dao <%= modelName %>DaoImpl
@@ -27,8 +29,10 @@ export default class <%= modelName %>DaoImpl implements I<%= modelName %>Dao {
     //Do some business logic...
 
     try {
-      return (await <%= modelName %>Repository.findOne({ id<%= modelName %>: id })
-        .exec()).toObject();
+      const res = await <%= modelName %>Repository.findOne({ id<%= modelName %>: id })
+        .exec();
+
+      return res ? res.toObject() : Promise.reject(new DaoError("Not found!"));
     } catch (err) {
 			if (err instanceof mongoose.Error) {
 				const error = new DaoError(err.message, err.stack);
@@ -60,9 +64,11 @@ export default class <%= modelName %>DaoImpl implements I<%= modelName %>Dao {
   public async update<%= modelName %>(<%= modelVar %>: I<%= modelName %>): Promise<I<%= modelName %>> {
     //Do some business logic...
     try {
-      return (await <%= modelName %>Repository.findOneAndUpdate({ id<%= modelName %>: <%= modelVar %>.id<%= modelName %> }, <%= modelVar %>, {
+      const res = await <%= modelName %>Repository.findOneAndUpdate({ id<%= modelName %>: <%= modelVar %>.id<%= modelName %> }, <%= modelVar %>, {
         new: true,
-      }).exec()).toObject();
+      }).exec();
+
+      return res ? res.toObject() : Promise.reject(new DaoError("Not found!"));
     } catch (err) {
 			if (err instanceof mongoose.Error) {
 				const error = new DaoError(err.message, err.stack);
@@ -76,9 +82,11 @@ export default class <%= modelName %>DaoImpl implements I<%= modelName %>Dao {
   public async delete<%= modelName %>ById(id: string): Promise<I<%= modelName %>> {
     //Do some business logic...
     try {
-      return (await <%= modelName %>Repository.findOneAndDelete({
+      const res = await <%= modelName %>Repository.findOneAndDelete({
         id<%= modelName %>: id,
-      }).exec()).toObject();
+      }).exec();
+
+      return res ? res.toObject() : Promise.reject(new DaoError("Not found!"));
     } catch (err) {
 			if (err instanceof mongoose.Error) {
 				const error = new DaoError(err.message, err.stack);
