@@ -18,6 +18,15 @@ try {
 
 RegisterRoutes(app);
 
+
+app.use(function notFoundHandler(req, res: ExpressResponse) {
+	if (req.path === '/') {
+		res.redirect('/docs');
+	} else {
+		res.status(404).send('Not Found');
+	}
+});
+
 database()
   .then(() => {
     console.log("connected to database");
