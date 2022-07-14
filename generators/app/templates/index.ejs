@@ -1,5 +1,8 @@
 import 'module-alias/register';
-import express from 'express';
+import express, {
+	Response as ExpressResponse,
+	Request as ExpressRequest,
+} from 'express';
 <%- importController %>
 import { database } from './database';
 import { RegisterRoutes } from './routes';

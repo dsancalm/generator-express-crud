@@ -108,7 +108,7 @@ module.exports = class expressCrud extends Generator {
       // For each attribute, construct the entity + mongo schema
       entityAttributes.forEach((key) => {
         modelBodyEntity +=
-          key + ": " + doc[entity][key].toLowerCase() + "; \n\t";
+          key + "?: " + doc[entity][key].toLowerCase() + "; \n\t";
         modelFieldsMongoSchema += key + ": {";
         modelFieldsMongoSchema += "type: " + doc[entity][key] + ",";
         modelFieldsMongoSchema += "required: false";
