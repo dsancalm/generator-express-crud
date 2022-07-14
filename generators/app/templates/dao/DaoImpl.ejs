@@ -10,38 +10,82 @@ import { ProvideSingleton } from '@ioc/ioc';
 export default class <%= modelName %>DaoImpl implements I<%= modelName %>Dao {
   public async save<%= modelName %>(<%= modelVar %>: I<%= modelName %>): Promise<I<%= modelName %>> {
     //Do some business logic...
-    const res = await <%= modelName %>Repository.create(<%= modelVar %>);
-    return res ? res.toObject() : Promise.reject();
+    try {
+      return (await <%= modelName %>Repository.create(<%= modelVar %>)).toObject();
+    } catch (err) {
+			if (err instanceof mongoose.Error) {
+				const error = new DaoError(err.message, err.stack);
+				return Promise.reject(error);
+			} else {
+				return Promise.reject(new DaoError('Unknown error'));
+			}
+		}
+    
   }
 
   public async get<%= modelName %>ById(id: string): Promise<I<%= modelName %>> {
     //Do some business logic...
-    const res = await <%= modelName %>Repository.findOne({ id<%= modelName %>: id })
-      .exec();
-    return res ? res.toObject() : Promise.reject();
+
+    try {
+      return (await <%= modelName %>Repository.findOne({ id<%= modelName %>: id })
+        .exec()).toObject();
+    } catch (err) {
+			if (err instanceof mongoose.Error) {
+				const error = new DaoError(err.message, err.stack);
+				return Promise.reject(error);
+			} else {
+				return Promise.reject(new DaoError('Unknown error'));
+			}
+		}
   }
 
   public async getAll(): Promise<I<%= modelName %>[]> {
     //Do some business logic...
-    const res = await <%= modelName %>Repository.find().exec();
-    return res ? res.map(function (document) {
-      return document.toObject();
-    }) : Promise.reject();
+
+    try {
+      const res = await <%= modelName %>Repository.find().exec();
+      return res.map(function (document) {
+        return document.toObject();
+      });
+    } catch (err) {
+			if (err instanceof mongoose.Error) {
+				const error = new DaoError(err.message, err.stack);
+				return Promise.reject(error);
+			} else {
+				return Promise.reject(new DaoError('Unknown error'));
+			}
+		}
   }
 
   public async update<%= modelName %>(<%= modelVar %>: I<%= modelName %>): Promise<I<%= modelName %>> {
     //Do some business logic...
-    const res = await <%= modelName %>Repository.findOneAndUpdate({ id<%= modelName %>: <%= modelVar %>.id<%= modelName %> }, <%= modelVar %>, {
-      new: true,
-    }).exec();
-    return res ? Promise.resolve(res.toObject()) : Promise.reject();
+    try {
+      return (await <%= modelName %>Repository.findOneAndUpdate({ id<%= modelName %>: <%= modelVar %>.id<%= modelName %> }, <%= modelVar %>, {
+        new: true,
+      }).exec()).toObject();
+    } catch (err) {
+			if (err instanceof mongoose.Error) {
+				const error = new DaoError(err.message, err.stack);
+				return Promise.reject(error);
+			} else {
+				return Promise.reject(new DaoError('Unknown error'));
+			}
+		}
   }
 
   public async delete<%= modelName %>ById(id: string): Promise<I<%= modelName %>> {
     //Do some business logic...
-    const res = await <%= modelName %>Repository.findOneAndDelete({
-      id<%= modelName %>: id,
-    }).exec();
-    return res ? res.toObject() : Promise.reject();
+    try {
+      return (await <%= modelName %>Repository.findOneAndDelete({
+        id<%= modelName %>: id,
+      }).exec()).toObject();
+    } catch (err) {
+			if (err instanceof mongoose.Error) {
+				const error = new DaoError(err.message, err.stack);
+				return Promise.reject(error);
+			} else {
+				return Promise.reject(new DaoError('Unknown error'));
+			}
+		}
   }
 }
