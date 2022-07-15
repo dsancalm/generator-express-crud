@@ -8,6 +8,9 @@
     "email": "88796552+dsancalm@users.noreply.github.com",
     "url": "https://github.com/dsancalm"
   },
+  "contributors": [
+    "dlopezmartinez <-> (https://github.com/dlopezmartinez/)"
+  ],
   "files": [
     "generators"
   ],

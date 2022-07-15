@@ -13,8 +13,14 @@ export default class <%= modelName %>DaoImpl implements I<%= modelName %>Dao {
   public async save<%= modelName %>(<%= modelVar %>: I<%= modelName %>): Promise<I<%= modelName %>> {
     //Do some business logic...
     try {
+      const document = await <%= modelName %>Repository.findOne({ id<%= modelName %>: <%= modelVar %>.id<%= modelName %>  })
+        .exec();
+      if (document) {
+        return Promise.reject(new DaoError("Already Exists!"));
+      }
       return (await <%= modelName %>Repository.create(<%= modelVar %>)).toObject();
     } catch (err) {
+      //Do the business logic error you want...
 			if (err instanceof mongoose.Error) {
 				const error = new DaoError(err.message, err.stack);
 				return Promise.reject(error);
@@ -34,6 +40,7 @@ export default class <%= modelName %>DaoImpl implements I<%= modelName %>Dao {
 
       return res ? res.toObject() : Promise.reject(new DaoError("Not found!"));
     } catch (err) {
+      //Do the business logic error you want...
 			if (err instanceof mongoose.Error) {
 				const error = new DaoError(err.message, err.stack);
 				return Promise.reject(error);
@@ -45,7 +52,6 @@ export default class <%= modelName %>DaoImpl implements I<%= modelName %>Dao {
 
   public async getAll(): Promise<I<%= modelName %>[]> {
     //Do some business logic...
-
     try {
       const res = await <%= modelName %>Repository.find().exec();
       return res.map(function (document) {
@@ -70,6 +76,8 @@ export default class <%= modelName %>DaoImpl implements I<%= modelName %>Dao {
 
       return res ? res.toObject() : Promise.reject(new DaoError("Not found!"));
     } catch (err) {
+
+      //Do the business logic error you want...
 			if (err instanceof mongoose.Error) {
 				const error = new DaoError(err.message, err.stack);
 				return Promise.reject(error);
@@ -88,6 +96,8 @@ export default class <%= modelName %>DaoImpl implements I<%= modelName %>Dao {
 
       return res ? res.toObject() : Promise.reject(new DaoError("Not found!"));
     } catch (err) {
+
+      //Do the business logic error you want...
 			if (err instanceof mongoose.Error) {
 				const error = new DaoError(err.message, err.stack);
 				return Promise.reject(error);

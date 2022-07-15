@@ -3,6 +3,8 @@ import I<%= modelName %>Dao from "@interfaces/dao/I<%= modelName %>Dao";
 import <%= modelName %>DaoImpl from "@dao/<%= modelName %>DaoImpl";
 import I<%= modelName %> from "@models/entities/<%= modelName %>";
 import { ProvideSingleton, inject } from '@ioc/ioc';
+import DaoError from "@common/exception/DaoError";
+import ServiceError from "@common/exception/ServiceError";
 
 /**
 * Service <%= modelName %>ServiceImpl
@@ -16,8 +18,14 @@ export class <%= modelName %>ServiceImpl implements I<%= modelName %>Service {
     try {
       return await this.<%= modelVar %>Dao
         .delete<%= modelName %>ById(id);
-    } catch {
-      return Promise.reject();
+    } catch (err) {
+      if (err instanceof DaoError) {
+        //Do the business logic error you want...
+        const error = new ServiceError(err.message, err.stack);
+        return Promise.reject(error);
+      } else {
+        return Promise.reject(new ServiceError("Unknown error"));
+      }
     }
   }
 
@@ -27,8 +35,14 @@ export class <%= modelName %>ServiceImpl implements I<%= modelName %>Service {
     try {
       return await this.<%= modelVar %>Dao
         .getAll();
-    } catch {
-      return Promise.reject();
+    } catch (err) {
+      if (err instanceof DaoError) {
+        //Do the business logic error you want...
+        const error = new ServiceError(err.message, err.stack);
+        return Promise.reject(error);
+      } else {
+        return Promise.reject(new ServiceError("Unknown error"));
+      }
     }
   }
 
@@ -37,8 +51,14 @@ export class <%= modelName %>ServiceImpl implements I<%= modelName %>Service {
     try {
       return await this.<%= modelVar %>Dao
         .update<%= modelName %>(<%= modelVar %>);
-    } catch {
-      return Promise.reject();
+    } catch (err) {
+      if (err instanceof DaoError) {
+        //Do the business logic error you want...
+        const error = new ServiceError(err.message, err.stack);
+        return Promise.reject(error);
+      } else {
+        return Promise.reject(new ServiceError("Unknown error"));
+      }
     }
   }
 
@@ -47,8 +67,14 @@ export class <%= modelName %>ServiceImpl implements I<%= modelName %>Service {
     try {
       return await this.<%= modelVar %>Dao
         .get<%= modelName %>ById(id);
-    } catch {
-      return Promise.reject();
+    } catch (err) {
+      if (err instanceof DaoError) {
+        //Do the business logic error you want...
+        const error = new ServiceError(err.message, err.stack);
+        return Promise.reject(error);
+      } else {
+        return Promise.reject(new ServiceError("Unknown error"));
+      }
     }
   }
 
@@ -57,8 +83,14 @@ export class <%= modelName %>ServiceImpl implements I<%= modelName %>Service {
     try {
       return await this.<%= modelVar %>Dao
         .save<%= modelName %>(<%= modelVar %>);
-    } catch {
-      return Promise.reject();
+    } catch (err) {
+      if (err instanceof DaoError) {
+        //Do the business logic error you want...
+        const error = new ServiceError(err.message, err.stack);
+        return Promise.reject(error);
+      } else {
+        return Promise.reject(new ServiceError("Unknown error"));
+      }
     }
   }
 }
