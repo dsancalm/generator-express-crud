@@ -1,8 +1,9 @@
 import 'module-alias/register';
 import express, {
-	Response as ExpressResponse,
-	Request as ExpressRequest,
-} from 'express';
+  NextFunction,
+  Response as ExpressResponse,
+  Request as ExpressRequest,
+} from "express";
 <%- importController %>
 import { database } from './database';
 import { RegisterRoutes } from './routes';
@@ -28,6 +29,23 @@ app.use(function notFoundHandler(req, res: ExpressResponse) {
 	} else {
 		res.status(404).send('Not Found');
 	}
+});
+
+app.use(function errorHandler(
+  err: unknown,
+  _req: ExpressRequest,
+  res: ExpressResponse,
+  _next: NextFunction
+): ExpressResponse | void {
+  if (typeof err === "string") {
+    return res.status(400).json({
+      message: err,
+    });
+  } else {
+    return res.status(500).json({
+      message: "Internal Server Error",
+    });
+  }
 });
 
 database()

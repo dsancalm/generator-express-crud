@@ -20,9 +20,14 @@ export class <%= modelName %>Controller extends Controller {
     //Do some business logic...
     try {
 			return await this.<%= modelVar %>Service.save<%= modelName %>(<%= modelVar %>);
-		} catch {
-			return Promise.reject();
-		}
+		} catch (err) {
+      if (err instanceof ServiceError) {
+        //Do the business logic error you want...
+        return Promise.reject(err.message);
+      } else {
+        return Promise.reject("Unknown error");
+      }
+    }
   }
 
 
@@ -31,9 +36,14 @@ export class <%= modelName %>Controller extends Controller {
     //Do some business logic...
     try {
 			return await this.<%= modelVar %>Service.get<%= modelName %>ById(id);
-		} catch {
-			return Promise.reject();
-		}
+		} catch (err) {
+      if (err instanceof ServiceError) {
+        //Do the business logic error you want...
+        return Promise.reject(err.message);
+      } else {
+        return Promise.reject("Unknown error");
+      }
+    }
   }
 
 
@@ -42,8 +52,13 @@ export class <%= modelName %>Controller extends Controller {
     //Do some business logic...
     try {
       return await this.<%= modelVar %>Service.getAll();
-    } catch {
-      return Promise.reject();
+    } catch (err) {
+      if (err instanceof ServiceError) {
+        //Do the business logic error you want...
+        return Promise.reject(err.message);
+      } else {
+        return Promise.reject("Unknown error");
+      }
     }
   }
 
@@ -51,9 +66,14 @@ export class <%= modelName %>Controller extends Controller {
   public async delete<%= modelName %>ById(@Query() id: string): Promise<I<%= modelName %>>  {
     try {
 			return await this.<%= modelVar %>Service.delete<%= modelName %>ById(id);
-		} catch {
-			return Promise.reject();
-		}
+		} catch (err) {
+      if (err instanceof ServiceError) {
+        //Do the business logic error you want...
+        return Promise.reject(err.message);
+      } else {
+        return Promise.reject("Unknown error");
+      }
+    }
   }
 
 
@@ -63,8 +83,13 @@ export class <%= modelName %>Controller extends Controller {
     //Do some business logic...
     try {
 			return await this.<%= modelVar %>Service.update<%= modelName %>(<%= modelVar %>);
-		} catch {
-			return Promise.reject();
-		}
+		} catch (err) {
+      if (err instanceof ServiceError) {
+        //Do the business logic error you want...
+        return Promise.reject(err.message);
+      } else {
+        return Promise.reject("Unknown error");
+      }
+    }
   }
 }
