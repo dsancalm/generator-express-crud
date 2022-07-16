@@ -1,34 +1,31 @@
-import {
-  Container,
-  Inject,
-  OnlyInstantiableByContainer,
-  Singleton,
-} from "typescript-ioc";
 import I<%= modelName %>Service from "@interfaces/service/I<%= modelName %>Service";
 import I<%= modelName %>Dao from "@interfaces/dao/I<%= modelName %>Dao";
 import <%= modelName %>DaoImpl from "@dao/<%= modelName %>DaoImpl";
 import I<%= modelName %> from "@models/entities/<%= modelName %>";
+import { ProvideSingleton, inject } from '@ioc/ioc';
+import DaoError from "@common/exception/DaoError";
+import ServiceError from "@common/exception/ServiceError";
 
-Container.bind(I<%= modelName %>Dao).to(<%= modelName %>DaoImpl);
 /**
 * Service <%= modelName %>ServiceImpl
 */
-@Singleton
-@OnlyInstantiableByContainer
+@ProvideSingleton(<%= modelName %>ServiceImpl)
 export class <%= modelName %>ServiceImpl implements I<%= modelName %>Service {
-  private <%= modelVar %>Dao: I<%= modelName %>Dao;
-
-  constructor(@Inject <%= modelVar %>Dao: I<%= modelName %>Dao) {
-    this.<%= modelVar %>Dao = <%= modelVar %>Dao;
-  }
+  constructor(@inject(<%= modelName %>DaoImpl) private <%= modelVar %>Dao: I<%= modelName %>Dao) {}
 
   public async delete<%= modelName %>ById(id: string): Promise<I<%= modelName %>> {
     //Do some business logic...
     try {
       return await this.<%= modelVar %>Dao
         .delete<%= modelName %>ById(id);
-    } catch {
-      return Promise.reject();
+    } catch (err) {
+      if (err instanceof DaoError) {
+        //Do the business logic error you want...
+        const error = new ServiceError(err.message, err.stack);
+        return Promise.reject(error);
+      } else {
+        return Promise.reject(new ServiceError("Unknown error"));
+      }
     }
   }
 
@@ -38,8 +35,14 @@ export class <%= modelName %>ServiceImpl implements I<%= modelName %>Service {
     try {
       return await this.<%= modelVar %>Dao
         .getAll();
-    } catch {
-      return Promise.reject();
+    } catch (err) {
+      if (err instanceof DaoError) {
+        //Do the business logic error you want...
+        const error = new ServiceError(err.message, err.stack);
+        return Promise.reject(error);
+      } else {
+        return Promise.reject(new ServiceError("Unknown error"));
+      }
     }
   }
 
@@ -48,8 +51,14 @@ export class <%= modelName %>ServiceImpl implements I<%= modelName %>Service {
     try {
       return await this.<%= modelVar %>Dao
         .update<%= modelName %>(<%= modelVar %>);
-    } catch {
-      return Promise.reject();
+    } catch (err) {
+      if (err instanceof DaoError) {
+        //Do the business logic error you want...
+        const error = new ServiceError(err.message, err.stack);
+        return Promise.reject(error);
+      } else {
+        return Promise.reject(new ServiceError("Unknown error"));
+      }
     }
   }
 
@@ -58,8 +67,14 @@ export class <%= modelName %>ServiceImpl implements I<%= modelName %>Service {
     try {
       return await this.<%= modelVar %>Dao
         .get<%= modelName %>ById(id);
-    } catch {
-      return Promise.reject();
+    } catch (err) {
+      if (err instanceof DaoError) {
+        //Do the business logic error you want...
+        const error = new ServiceError(err.message, err.stack);
+        return Promise.reject(error);
+      } else {
+        return Promise.reject(new ServiceError("Unknown error"));
+      }
     }
   }
 
@@ -68,8 +83,14 @@ export class <%= modelName %>ServiceImpl implements I<%= modelName %>Service {
     try {
       return await this.<%= modelVar %>Dao
         .save<%= modelName %>(<%= modelVar %>);
-    } catch {
-      return Promise.reject();
+    } catch (err) {
+      if (err instanceof DaoError) {
+        //Do the business logic error you want...
+        const error = new ServiceError(err.message, err.stack);
+        return Promise.reject(error);
+      } else {
+        return Promise.reject(new ServiceError("Unknown error"));
+      }
     }
   }
 }

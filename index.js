@@ -1,7 +1,7 @@
 #! /usr/bin/env node
-var yeoman = require("yeoman-environment");
+let yeoman = require("yeoman-environment");
 const expressCrud = require("./generators/app");
-var env = yeoman.createEnv();
+let env = yeoman.createEnv();
 
 env.registerStub(expressCrud, "npm:app");
 
