@@ -3,6 +3,8 @@ import I<%= modelName %> from "@models/entities/<%= modelName %>";
 import { <%= modelName %>ServiceImpl } from "@service/<%= modelName %>ServiceImpl";
 import { Controller, Get, Route, Query, Delete, Put, Body, Post } from 'tsoa';
 import { ProvideSingleton, inject } from '@ioc/ioc';
+import ServiceError from "@common/exception/ServiceError";
+
 
 /**
 * Controller <%= modelName %>Controller
