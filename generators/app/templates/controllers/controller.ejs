@@ -1,7 +1,7 @@
 import I<%= modelName %>Service from "@interfaces/service/I<%= modelName %>Service";
 import I<%= modelName %> from "@models/entities/<%= modelName %>";
 import { <%= modelName %>ServiceImpl } from "@service/<%= modelName %>ServiceImpl";
-import { Controller, Get, Route, Query, Delete, Put, Body, Post } from 'tsoa';
+import { Controller, Get, Route, Query, Delete, Put, Body, Post, Response, SuccessResponse } from 'tsoa';
 import { ProvideSingleton, inject } from '@ioc/ioc';
 import ServiceError from "@common/exception/ServiceError";
 
@@ -17,6 +17,9 @@ export class <%= modelName %>Controller extends Controller {
 		super();
 	}
 
+
+  @Response<{ message: string }>(400, "Bad request")
+  @SuccessResponse("200", "Success")
   @Post('/save')
   public async save<%= modelName %>(@Body() <%= modelVar %>: I<%= modelName %>): Promise<I<%= modelName %>> {
     //Do some business logic...
@@ -33,6 +36,9 @@ export class <%= modelName %>Controller extends Controller {
   }
 
 
+
+  @Response<{ message: string }>(400, "Bad request")
+  @SuccessResponse("200", "Success")
   @Get('/getById')
   public async get<%= modelName %>ById(@Query() id: string): Promise<I<%= modelName %>>  {
     //Do some business logic...
@@ -49,6 +55,8 @@ export class <%= modelName %>Controller extends Controller {
   }
 
 
+  @Response<{ message: string }>(400, "Bad request")
+  @SuccessResponse("200", "Success")
   @Get('/getAll')
   public async getAll(): Promise<I<%= modelName %>[]>  {
     //Do some business logic...
@@ -64,6 +72,9 @@ export class <%= modelName %>Controller extends Controller {
     }
   }
 
+
+  @Response<{ message: string }>(400, "Bad request")
+  @SuccessResponse("200", "Success")
   @Delete('/deleteById')
   public async delete<%= modelName %>ById(@Query() id: string): Promise<I<%= modelName %>>  {
     try {
@@ -79,6 +90,8 @@ export class <%= modelName %>Controller extends Controller {
   }
 
 
+  @Response<{ message: string }>(400, "Bad request")
+  @SuccessResponse("200", "Success")
   @Put('/update')
   public async update<%= modelName %>(@Body() <%= modelVar %>: I<%= modelName %>): Promise<I<%= modelName %>> {
 
