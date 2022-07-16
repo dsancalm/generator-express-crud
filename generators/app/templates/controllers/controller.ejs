@@ -1,83 +1,110 @@
 import I<%= modelName %>Service from "@interfaces/service/I<%= modelName %>Service";
 import I<%= modelName %> from "@models/entities/<%= modelName %>";
 import { <%= modelName %>ServiceImpl } from "@service/<%= modelName %>ServiceImpl";
-import express from "express";
-import { Container, Inject } from "typescript-ioc";
+import { Controller, Get, Route, Query, Delete, Put, Body, Post, Response, SuccessResponse } from 'tsoa';
+import { ProvideSingleton, inject } from '@ioc/ioc';
+import ServiceError from "@common/exception/ServiceError";
 
-Container.bind(I<%= modelName %>Service).to(<%= modelName %>ServiceImpl);
 
 /**
 * Controller <%= modelName %>Controller
 */
-export class <%= modelName %>Controller {
-  private <%= modelVar %>Service: I<%= modelName %>Service;
+@Route('/<%= modelVar %>')
+@ProvideSingleton(<%= modelName %>Controller)
+export class <%= modelName %>Controller extends Controller {
 
-  constructor(@Inject <%= modelVar %>Service: I<%= modelName %>Service) {
-    this.<%= modelVar %>Service = <%= modelVar %>Service;
-  }
+  constructor(@inject(<%= modelName %>ServiceImpl) private <%= modelVar %>Service: I<%= modelName %>Service) {
+		super();
+	}
 
-  public save<%= modelName %>(req: express.Request, res: express.Response) {
+
+  @Response<{ message: string }>(400, "Bad request")
+  @SuccessResponse("200", "Success")
+  @Post('/save')
+  public async save<%= modelName %>(@Body() <%= modelVar %>: I<%= modelName %>): Promise<I<%= modelName %>> {
     //Do some business logic...
-    const <%= modelVar %>: I<%= modelName %> = req.body.<%= modelVar %> as I<%= modelName %>;
-    this.<%= modelVar %>Service
-      .save<%= modelName %>(<%= modelVar %>)
-      .then((respuestaService) => {
-        res.status(200).send(respuestaService);
-      })
-      .catch((respuestaService) => {
-        res.status(404).send(respuestaService);
-      });
+    try {
+			return await this.<%= modelVar %>Service.save<%= modelName %>(<%= modelVar %>);
+		} catch (err) {
+      if (err instanceof ServiceError) {
+        //Do the business logic error you want...
+        return Promise.reject(err.message);
+      } else {
+        return Promise.reject("Unknown error");
+      }
+    }
   }
 
-  public get<%= modelName %>ById(req: express.Request, res: express.Response) {
+
+
+  @Response<{ message: string }>(400, "Bad request")
+  @SuccessResponse("200", "Success")
+  @Get('/getById')
+  public async get<%= modelName %>ById(@Query() id: string): Promise<I<%= modelName %>>  {
     //Do some business logic...
-    const id: string = req.query.id as string;
-    this.<%= modelVar %>Service
-      .get<%= modelName %>ById(id)
-      .then((respuestaService) => {
-        res.status(200).send(respuestaService);
-      })
-      .catch((respuestaService) => {
-        res.status(404).send(respuestaService);
-      });
+    try {
+			return await this.<%= modelVar %>Service.get<%= modelName %>ById(id);
+		} catch (err) {
+      if (err instanceof ServiceError) {
+        //Do the business logic error you want...
+        return Promise.reject(err.message);
+      } else {
+        return Promise.reject("Unknown error");
+      }
+    }
   }
 
-  public getAll(_req: express.Request, res: express.Response) {
+
+  @Response<{ message: string }>(400, "Bad request")
+  @SuccessResponse("200", "Success")
+  @Get('/getAll')
+  public async getAll(): Promise<I<%= modelName %>[]>  {
+    //Do some business logic...
+    try {
+      return await this.<%= modelVar %>Service.getAll();
+    } catch (err) {
+      if (err instanceof ServiceError) {
+        //Do the business logic error you want...
+        return Promise.reject(err.message);
+      } else {
+        return Promise.reject("Unknown error");
+      }
+    }
+  }
+
+
+  @Response<{ message: string }>(400, "Bad request")
+  @SuccessResponse("200", "Success")
+  @Delete('/deleteById')
+  public async delete<%= modelName %>ById(@Query() id: string): Promise<I<%= modelName %>>  {
+    try {
+			return await this.<%= modelVar %>Service.delete<%= modelName %>ById(id);
+		} catch (err) {
+      if (err instanceof ServiceError) {
+        //Do the business logic error you want...
+        return Promise.reject(err.message);
+      } else {
+        return Promise.reject("Unknown error");
+      }
+    }
+  }
+
+
+  @Response<{ message: string }>(400, "Bad request")
+  @SuccessResponse("200", "Success")
+  @Put('/update')
+  public async update<%= modelName %>(@Body() <%= modelVar %>: I<%= modelName %>): Promise<I<%= modelName %>> {
 
     //Do some business logic...
-    this.<%= modelVar %>Service
-      .getAll()
-      .then((respuestaService) => {
-        res.status(200).send(respuestaService);
-      })
-      .catch((respuestaService) => {
-        res.status(404).send(respuestaService);
-      });
-  }
-
-  public delete<%= modelName %>ById(req: express.Request, res: express.Response) {
-    const id: string = req.query.id as string;
-    this.<%= modelVar %>Service
-      .delete<%= modelName %>ById(id)
-      .then((respuestaService) => {
-        res.status(200).send(respuestaService);
-      })
-      .catch((respuestaService) => {
-        res.status(404).send(respuestaService);
-      });
-  }
-
-  public update<%= modelName %>(req: express.Request, res: express.Response) {
-
-    //Do some business logic...
-    const <%= modelVar %>: I<%= modelName %> = req.body.<%= modelVar %> as I<%= modelName %>;
-    this.<%= modelVar %>Service
-      .update<%= modelName %>(<%= modelVar %>)
-      .then((respuestaService) => {
-        res.status(200).send(respuestaService);
-      })
-      .catch((respuestaService) => {
-        res.status(404).send(respuestaService);
-      });
+    try {
+			return await this.<%= modelVar %>Service.update<%= modelName %>(<%= modelVar %>);
+		} catch (err) {
+      if (err instanceof ServiceError) {
+        //Do the business logic error you want...
+        return Promise.reject(err.message);
+      } else {
+        return Promise.reject("Unknown error");
+      }
+    }
   }
 }

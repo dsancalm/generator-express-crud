@@ -6,7 +6,6 @@ const yosay = require("yosay");
 const yaml = require("js-yaml");
 const validate = require("./validate");
 
-
 module.exports = class expressCrud extends Generator {
   async prompting() {
     this.log(yosay(`${chalk.red("generator-express-crud")}`));
@@ -17,33 +16,31 @@ module.exports = class expressCrud extends Generator {
         name: "modelFile",
         message:
           "Insert you model .yaml filename that contains your data model business: ",
-        default: "model.yaml"
-      }
+        default: "model.yaml",
+      },
     ]);
     this.appConfig = await this.prompt([
       {
         type: "input",
         name: "port",
         message: "Insert the port where you want to startup your app: ",
-        default: 8080
+        default: 8080,
       },
       {
         type: "input",
         name: "mongoUrl",
         when: !this.fs.exists(this.destinationPath("src/database.ts")),
         message: "Insert your URL MongoDB database: ",
-        default: "mongodb://mongo:*****@default:6754/"
-      }
+        default: "mongodb://mongo:*****@default:6754/",
+      },
     ]);
   }
 
-  
   beforeWriting() {
-    
     if (!this.fs.exists(this.model.modelFile)) {
       throw new ReferenceError("File " + this.model.modelFile + " not exist");
     }
-  
+
     // Read the yaml model file
     const doc = yaml.load(this.fs.read(this.model.modelFile));
     // Validate model
@@ -52,7 +49,9 @@ module.exports = class expressCrud extends Generator {
 
   writing() {
     // Set the root folder
-    this.sourceRoot("node_modules/generator-express-crud/generators/app/templates/");
+    this.sourceRoot(
+      "node_modules/generator-express-crud/generators/app/templates/"
+    );
 
     // Copy ts standard config
     this.fs.copyTpl(
@@ -69,18 +68,33 @@ module.exports = class expressCrud extends Generator {
       this.templatePath("tsconfig-build.json.txt"),
       this.destinationPath("tsconfig-build.json")
     );
+    // Copy tsoa standard  build config
+    this.fs.copyTpl(
+      this.templatePath("tsoa.json.txt"),
+      this.destinationPath("tsoa.json")
+    );
 
-    // Setup the variable which will contain all the routers for all entities defined
-    let modelRouter = "";
+    // Copy nodemon standard  build config
+    this.fs.copyTpl(
+      this.templatePath("nodemon.json.txt"),
+      this.destinationPath("nodemon.json")
+    );
+
+    // Copy ioc config
+    this.fs.copyTpl(
+      this.templatePath("ioc/ioc.ts"),
+      this.destinationPath("src/ioc/ioc.ts")
+    );
+
     // Setup the variable which will contain all the imports needed for all entities defined
-    let importRouter = "";
+    let importController = "";
 
     // Read the yaml model file
     const doc = yaml.load(this.fs.read(this.model.modelFile));
     // Setup the entities to create
     let entitiesToCreate = Object.keys(doc);
     // For each entity, we have to copy and construct the templates
-    entitiesToCreate.forEach(entity => {
+    entitiesToCreate.forEach((entity) => {
       // Get entity attributes
       let entityAttributes = Object.keys(doc[entity]);
       // Setup the entity body
@@ -88,14 +102,13 @@ module.exports = class expressCrud extends Generator {
       // Setup the schema mongo body
       let modelFieldsMongoSchema = "";
 
-      modelRouter += "app.use('/" + entity.toLowerCase() + "', " + entity.toLowerCase() + "Router); \n";
-
-      importRouter += "import { " + entity.toLowerCase() + "Router } from '@controllers/" + entity + "/" + entity + "Router'; \n";
+      importController +=
+        "import '@controllers/" + entity + "/" + entity + "Controller'; \n";
 
       // For each attribute, construct the entity + mongo schema
-      entityAttributes.forEach(key => {
+      entityAttributes.forEach((key) => {
         modelBodyEntity +=
-          key + ": " + doc[entity][key].toLowerCase() + "; \n\t";
+          key + "?: " + doc[entity][key].toLowerCase() + "; \n\t";
         modelFieldsMongoSchema += key + ": {";
         modelFieldsMongoSchema += "type: " + doc[entity][key] + ",";
         modelFieldsMongoSchema += "required: false";
@@ -114,7 +127,7 @@ module.exports = class expressCrud extends Generator {
         {
           modelName: entity,
           modelFields: modelFieldsMongoSchema,
-          modelVar: entity.toLowerCase()
+          modelVar: entity.toLowerCase(),
         }
       );
       // Copy dao interface template and replace
@@ -123,7 +136,7 @@ module.exports = class expressCrud extends Generator {
         this.destinationPath("src/interfaces/dao/I" + modelNameFile + "Dao.ts"),
         {
           modelName: entity,
-          modelVar: entity.toLowerCase()
+          modelVar: entity.toLowerCase(),
         }
       );
 
@@ -133,7 +146,7 @@ module.exports = class expressCrud extends Generator {
         this.destinationPath("src/dao/" + modelNameFile + "DaoImpl.ts"),
         {
           modelName: entity,
-          modelVar: entity.toLowerCase()
+          modelVar: entity.toLowerCase(),
         }
       );
       // Copy model template and replace
@@ -142,7 +155,7 @@ module.exports = class expressCrud extends Generator {
         this.destinationPath("src/models/entities/" + modelNameFile + ".ts"),
         {
           modelName: entity,
-          modelBody: modelBodyEntity
+          modelBody: modelBodyEntity,
         }
       );
       // Copy service interface template and replace
@@ -153,7 +166,7 @@ module.exports = class expressCrud extends Generator {
         ),
         {
           modelName: entity,
-          modelVar: entity.toLowerCase()
+          modelVar: entity.toLowerCase(),
         }
       );
       // Copy service implementation template and replace
@@ -162,7 +175,7 @@ module.exports = class expressCrud extends Generator {
         this.destinationPath("src/service/" + modelNameFile + "ServiceImpl.ts"),
         {
           modelName: entity,
-          modelVar: entity.toLowerCase()
+          modelVar: entity.toLowerCase(),
         }
       );
       // Copy repository implementation template and replace
@@ -177,30 +190,29 @@ module.exports = class expressCrud extends Generator {
         ),
         {
           modelName: entity,
-          modelVar: entity.toLowerCase()
-        }
-      );
-
-      // Copy router implementation template and replace
-      this.fs.copyTpl(
-        this.templatePath("controllers/router.ejs"),
-        this.destinationPath(
-          "src/controllers/" + modelNameFile + "/" + modelNameFile + "Router.ts"
-        ),
-        {
-          modelName: entity,
-          modelVar: entity.toLowerCase()
+          modelVar: entity.toLowerCase(),
         }
       );
     });
+
+    // Copy standard exception classes
+    this.fs.copyTpl(
+      this.templatePath("common/exception/DaoError.ejs"),
+      this.destinationPath("src/common/exception/DaoError.ts")
+    );
+
+    this.fs.copyTpl(
+      this.templatePath("common/exception/ServiceError.ejs"),
+      this.destinationPath("src/common/exception/ServiceError.ts")
+    );
+
     // Copy main index
     this.fs.copyTpl(
       this.templatePath("index.ejs"),
       this.destinationPath("src/index.ts"),
       {
         port: this.appConfig.port,
-        modelRouter: modelRouter,
-        importRouter: importRouter
+        importController: importController,
       }
     );
 
@@ -210,26 +222,16 @@ module.exports = class expressCrud extends Generator {
         this.templatePath("database.ejs"),
         this.destinationPath("src/database.ts"),
         {
-          mongoUrl: this.appConfig.mongoUrl
+          mongoUrl: this.appConfig.mongoUrl,
         }
       );
     }
   }
 
   afterWriting() {
-    console.log("API Generated: \n");
-    // Read the yaml model file
-    const doc = yaml.load(this.fs.read(this.model.modelFile));
-    // Setup the entities to create
-    let entitiesToCreate = Object.keys(doc);
-    // For each entity, we have to copy and construct the templates
-    entitiesToCreate.forEach(entity => {
-      console.log("Entity: " + entity);
-      console.log("http://localhost:" + this.appConfig.port + "/" +entity.toLowerCase() + "/save");
-      console.log("http://localhost:" + this.appConfig.port + "/" +entity.toLowerCase() + "/getById");
-      console.log("http://localhost:" + this.appConfig.port + "/" +entity.toLowerCase() + "/getAll");
-      console.log("http://localhost:" + this.appConfig.port + "/" +entity.toLowerCase() + "/deleteById");
-      console.log("http://localhost:" + this.appConfig.port + "/" +entity.toLowerCase() + "/update \n");
-    });
+    console.log("Documentation API Generated via Swagger");
+    console.log(
+      `You can check it by executing 'npm run dev' and checking http://localhost:${this.appConfig.port}/docs`
+    );
   }
 };
