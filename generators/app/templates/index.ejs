@@ -20,6 +20,39 @@ try {
 	console.error('swagger error', error);
 }
 
+// Middleware to intercept the response body, adding to locals so we can log later.
+app.use((_req, res, next) => {
+	const oldJson = res.json;
+	res.json = (body) => {
+		res.locals.body = body;
+		return oldJson.call(res, body);
+	};
+	next();
+});
+
+// Middleware to log in console the request and body response.
+app.use(function (
+	req: ExpressRequest,
+	res: ExpressResponse,
+	next: NextFunction
+) {
+	if (req.url !== '/') {
+		res?.on('finish', () => {
+			const response = res.locals.body;
+			const details = {
+				method: req?.method,
+				url: req?.path,
+				status: response?.request?.status || req.statusCode,
+				code: response?.request?.code || req.statusMessage,
+				body: response?.data || {},
+			};
+			console.log(details);
+		});
+	}
+	next();
+});
+
+//TSOA Middleware
 RegisterRoutes(app);
 
 // Middleware to redirect empty route to Swagger.
