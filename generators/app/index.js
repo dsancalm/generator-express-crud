@@ -272,6 +272,14 @@ module.exports = class expressCrud extends Generator {
       `You can check it by executing 'npm run dev' and checking http://localhost:${this.appConfig.port}/docs`
     );
 
-    await execWaitForOutput("docker-compose -f src/database/mongo.yml up");
+    execWaitForOutput("docker-compose -f src/database/mongo.yml up")
+      .then(msg => {
+        console.log(msg);
+        process.exit(0);
+      })
+      .catch(err => {
+        console.error(err);
+        process.exit(1);
+      });
   }
 };
