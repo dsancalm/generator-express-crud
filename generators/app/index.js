@@ -5,7 +5,7 @@ const chalk = require("chalk");
 const yosay = require("yosay");
 const yaml = require("js-yaml");
 const validate = require("./validate");
-
+import { execWaitForOutput } from './terminal'
 module.exports = class expressCrud extends Generator {
   async prompting() {
     this.log(yosay(`${chalk.red("generator-express-crud")}`));
@@ -19,6 +19,18 @@ module.exports = class expressCrud extends Generator {
         default: "model.yaml",
       },
     ]);
+
+    this.dockerizedMongo = await this.prompt([
+      {
+        type: "confirm",
+        name: "dockerized",
+        message: "Do you want to create a dockerized MongoDB, btw you need to have Docker installed on your machine ( you can use an existing one later ) : ",
+        store: true,
+      },
+    ]);
+
+    console.log(this.dockerizedMongo);
+
     this.appConfig = await this.prompt([
       {
         type: "input",
@@ -228,10 +240,12 @@ module.exports = class expressCrud extends Generator {
     }
   }
 
-  afterWriting() {
+  async afterWriting() {
     console.log("Documentation API Generated via Swagger");
     console.log(
       `You can check it by executing 'npm run dev' and checking http://localhost:${this.appConfig.port}/docs`
     );
+    
+    await execWaitForOutput('cd database; docker-compose -f mongo.yml up')
   }
 };
