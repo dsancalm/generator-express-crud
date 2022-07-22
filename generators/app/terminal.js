@@ -1,6 +1,7 @@
+/* eslint-disable func-names */
 const { exec } = require("child_process");
 
-export async function execWaitForOutput(command, execOptions = {}) {
+module.exports = async function execWaitForOutput(command, execOptions = {}) {
   return new Promise((resolve, reject) => {
     const childProcess = exec(command, execOptions);
 
@@ -13,4 +14,4 @@ export async function execWaitForOutput(command, execOptions = {}) {
     // Handle errors
     childProcess.on("error", error => reject(error));
   });
-}
+};

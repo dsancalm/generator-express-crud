@@ -1,3 +1,4 @@
+/* eslint-disable no-negated-condition */
 /* eslint-disable prettier/prettier */
 "use strict";
 const Generator = require("yeoman-generator");
@@ -5,7 +6,8 @@ const chalk = require("chalk");
 const yosay = require("yosay");
 const yaml = require("js-yaml");
 const validate = require("./validate");
-import { execWaitForOutput } from './terminal'
+const execWaitForOutput = require('./terminal');
+
 module.exports = class expressCrud extends Generator {
   async prompting() {
     this.log(yosay(`${chalk.red("generator-express-crud")}`));
@@ -29,9 +31,8 @@ module.exports = class expressCrud extends Generator {
       },
     ]);
 
-    console.log(this.dockerizedMongo);
-
-    this.appConfig = await this.prompt([
+    if(!this.dockerizedMongo){
+      this.appConfig = await this.prompt([
       {
         type: "input",
         name: "port",
@@ -46,6 +47,18 @@ module.exports = class expressCrud extends Generator {
         default: "mongodb://mongo:*****@default:6754/",
       },
     ]);
+    } else {
+
+    this.appConfig = await this.prompt([
+      {
+        type: "input",
+        name: "port",
+        message: "Insert the port where you want to startup your app: ",
+        default: 8080,
+      },
+    ]);
+    }
+
   }
 
   beforeWriting() {
@@ -234,18 +247,29 @@ module.exports = class expressCrud extends Generator {
         this.templatePath("database.ejs"),
         this.destinationPath("src/database.ts"),
         {
-          mongoUrl: this.appConfig.mongoUrl,
+          mongoUrl: this.appConfig.mongoUrl || 'mongodb://root:pass@localhost:27017/?authMechanism=DEFAULT',
+        }
+      );
+    }
+
+    if (this.dockerizedMongo) {
+      this.fs.copyTpl(
+        this.templatePath("database/mongo.yml"),
+        this.destinationPath("database/mongo.yml"),
+        {
+          mongoUrl: this.appConfig.mongoUrl || 'mongodb://root:pass@localhost:27017/?authMechanism=DEFAULT',
         }
       );
     }
   }
 
-  async afterWriting() {
+  afterWriting() {
     console.log("Documentation API Generated via Swagger");
     console.log(
       `You can check it by executing 'npm run dev' and checking http://localhost:${this.appConfig.port}/docs`
     );
-    
-    await execWaitForOutput('cd database; docker-compose -f mongo.yml up')
+
+    execWaitForOutput('cd database; docker-compose -f mongo.yml up')
+
   }
 };
