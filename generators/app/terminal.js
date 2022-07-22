@@ -13,5 +13,10 @@ module.exports = async function execWaitForOutput(command, execOptions = {}) {
     childProcess.on("close", () => resolve());
     // Handle errors
     childProcess.on("error", error => reject(error));
+    // Handle finish
+    childProcess.stdout.on("data", data => {
+      if (data?.msg === "Connection accepted")
+        resolve("Your database is now up on Docker !!");
+    });
   });
 };
