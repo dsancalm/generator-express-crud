@@ -16,28 +16,51 @@ module.exports = class expressCrud extends Generator {
         type: "input",
         name: "modelFile",
         message:
-          "Insert you model .yaml filename inside the source folder that contains your data model business, if no model found it will be a default test model: ",
+          "Insert you model .yaml filename inside the source folder that contains your data model business\n If no model found it will be a default test model: ",
         default: "model.yaml"
       }
     ]);
 
-    this.dockerizedMongo = await this.prompt([
+    this.appConfig = await this.prompt([
       {
-        type: "confirm",
-        name: "dockerized",
-        message:
-          "Do you want to create a dockerized MongoDB, btw you need to have Docker installed on your machine ( you can use an existing one if you say no ) : "
+        type: "input",
+        name: "port",
+        message: "Insert the port where you want to startup your app: ",
+        default: 8080
       }
     ]);
 
-    if (!this.dockerizedMongo) {
-      this.appConfig = await this.prompt([
-        {
-          type: "input",
-          name: "port",
-          message: "Insert the port where you want to startup your app: ",
-          default: 8080
-        },
+    this.database = await this.prompt([
+      {
+        type: "list",
+        name: "type",
+        message: "How do you want to create your database? : ",
+        choices: [
+          {
+            name: "I already have a database ( specify port later )",
+            value: "port"
+          },
+          {
+            name: "Create with Docker",
+            value: "docker"
+          },
+          {
+            name: "Online database",
+            value: "online"
+          },
+          {
+            name: "None",
+            value: "none"
+          }
+        ],
+        default: 1
+      }
+    ]);
+
+    this.config.set("database", this.database.type);
+
+    if (this.database.type === "online") {
+      this.databaseConfig = await this.prompt([
         {
           type: "input",
           name: "mongoUrl",
@@ -46,13 +69,15 @@ module.exports = class expressCrud extends Generator {
           default: "mongodb://mongo:*****@default:6754/"
         }
       ]);
-    } else {
-      this.appConfig = await this.prompt([
+    }
+
+    if (this.database.type === "port") {
+      this.databaseConfig = await this.prompt([
         {
           type: "input",
           name: "port",
-          message: "Insert the port where you want to startup your app: ",
-          default: 8080
+          message: "Insert your MongoDB port on localhost: ",
+          default: 27017
         }
       ]);
     }
@@ -72,7 +97,7 @@ module.exports = class expressCrud extends Generator {
       const route = this.templatePath("model.yaml");
       doc = yaml.load(this.fs.read(route));
       this.model.modelFile = route;
-      this.log({ doc });
+      this.log(doc);
     } else {
       doc = yaml.load(this.fs.read(this.model.modelFile));
     }
@@ -252,13 +277,14 @@ module.exports = class expressCrud extends Generator {
         this.destinationPath("src/database.ts"),
         {
           mongoUrl:
-            this.appConfig.mongoUrl ||
-            "mongodb://root:pass@localhost:27017/?authMechanism=DEFAULT"
+            this.databaseConfig?.mongoUrl ||
+            this.databaseConfig?.port ||
+            "mongodb://root:pass@localhost:27017/?authMechanism=DEFAULT" // Docker compose default URL
         }
       );
     }
 
-    if (this.dockerizedMongo) {
+    if (this.database.type === "docker") {
       this.fs.copyTplAsync(
         this.templatePath("database/mongo.yml"),
         this.destinationPath("src/database/mongo.yml")
@@ -272,14 +298,29 @@ module.exports = class expressCrud extends Generator {
       `You can check it by executing 'npm run dev' and checking http://localhost:${this.appConfig.port}/docs`
     );
 
-    execWaitForOutput("docker-compose -f src/database/mongo.yml up")
-      .then(msg => {
-        console.log(msg);
-        process.exit(0);
-      })
-      .catch(err => {
-        console.error(err);
-        process.exit(1);
-      });
+    const docker = this.config.get("database");
+
+    if (docker) {
+      const launchDocker = await this.prompt([
+        {
+          type: "confirm",
+          name: "useCompose",
+          message: "Do you want to launch docker-compose ?",
+          default: false
+        }
+      ]);
+
+      if (launchDocker.useCompose) {
+        execWaitForOutput("docker-compose -f src/database/mongo.yml up")
+          .then(msg => {
+            console.log(msg);
+            process.exit(0);
+          })
+          .catch(err => {
+            console.error(err);
+            process.exit(1);
+          });
+      }
+    }
   }
 };
