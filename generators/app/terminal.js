@@ -1,8 +1,12 @@
-/* eslint-disable no-unused-vars */
 /* eslint-disable func-names */
+/* eslint-disable no-unused-vars */
 const { exec } = require("child_process");
 
-module.exports = async function execWaitForOutput(command, execOptions = {}) {
+module.exports = async function execPromptOutput(command, execOptions = {}) {
+  if (execOptions.docker) {
+    return execDockerCommand(command);
+  }
+
   return new Promise((resolve, reject) => {
     const childProcess = exec(command, execOptions);
 
@@ -12,6 +16,25 @@ module.exports = async function execWaitForOutput(command, execOptions = {}) {
     });
     childProcess.stdout.on("data", data => {
       console.log(data);
+    });
+    // Handle exit
+    childProcess.on("exit", () => resolve());
+    childProcess.on("close", () => resolve());
+    // Handle errors
+    childProcess.on("error", error => reject(error));
+    // Handle finish
+  });
+};
+
+async function execDockerCommand(command) {
+  return new Promise((resolve, reject) => {
+    const childProcess = exec(command);
+
+    // Stream process output to console
+    childProcess.stderr.on("data", data => {
+      console.error(data);
+    });
+    childProcess.stdout.on("data", data => {
       const logArray = parseDockerLogs(data);
       logArray.forEach(log => {
         const obj = JSON.parse(log);
@@ -27,7 +50,7 @@ module.exports = async function execWaitForOutput(command, execOptions = {}) {
     childProcess.on("error", error => reject(error));
     // Handle finish
   });
-};
+}
 
 function isJson(str) {
   try {

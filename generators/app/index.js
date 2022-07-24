@@ -1,16 +1,55 @@
+/* eslint-disable no-unused-expressions */
 /* eslint-disable no-negated-condition */
 "use strict";
 const Generator = require("yeoman-generator");
 const chalk = require("chalk");
 const yosay = require("yosay");
 const yaml = require("js-yaml");
+const fs = require("fs");
 const validate = require("./validate");
-const execWaitForOutput = require("./terminal");
+const exec = require("./terminal");
 
 module.exports = class expressCrud extends Generator {
-  async prompting() {
+  async initializing() {
     this.log(yosay(`${chalk.red("generator-express-crud")}`));
+    this.sourceRoot(
+      "node_modules/generator-express-crud/generators/app/templates/"
+    );
 
+    const installed = fs.existsSync(this.templatePath());
+
+    if (!installed) {
+      this.installation = await this.prompt([
+        {
+          type: "confirm",
+          name: "install",
+          message:
+            "Seems that you dont have installed generator-express-crud, do you want to install it ? :",
+          default: true
+        }
+      ]);
+
+      if (this.installation.install) {
+        this.devMode = await this.prompt([
+          {
+            type: "confirm",
+            name: "install",
+            message: "In dev mode (npm link) ? :",
+            default: true
+          }
+        ]);
+
+        await exec("npm link generator-express-crud");
+      } else {
+        this.log(
+          "You need to have generator-express-crud installed in order to properly work!"
+        );
+        process.exit(1);
+      }
+    }
+  }
+
+  async prompting() {
     this.model = await this.prompt([
       {
         type: "input",
@@ -37,6 +76,10 @@ module.exports = class expressCrud extends Generator {
         message: "How do you want to create your database? : ",
         choices: [
           {
+            name: "None",
+            value: "none"
+          },
+          {
             name: "I already have a database ( specify port later )",
             value: "port"
           },
@@ -47,17 +90,11 @@ module.exports = class expressCrud extends Generator {
           {
             name: "Online database",
             value: "online"
-          },
-          {
-            name: "None",
-            value: "none"
           }
         ],
-        default: 1
+        default: 0
       }
     ]);
-
-    this.config.set("database", this.database.type);
 
     if (this.database.type === "online") {
       this.databaseConfig = await this.prompt([
@@ -81,13 +118,6 @@ module.exports = class expressCrud extends Generator {
         }
       ]);
     }
-  }
-
-  configuring() {
-    // Set the root folder
-    this.sourceRoot(
-      "node_modules/generator-express-crud/generators/app/templates/"
-    );
   }
 
   validating() {
@@ -298,9 +328,7 @@ module.exports = class expressCrud extends Generator {
       `You can check it by executing 'npm run dev' and checking http://localhost:${this.appConfig.port}/docs`
     );
 
-    const docker = this.config.get("database");
-
-    if (docker) {
+    if (this.database.type === "docker") {
       const launchDocker = await this.prompt([
         {
           type: "confirm",
@@ -311,7 +339,9 @@ module.exports = class expressCrud extends Generator {
       ]);
 
       if (launchDocker.useCompose) {
-        execWaitForOutput("docker-compose -f src/database/mongo.yml up")
+        await exec("docker-compose -f src/database/mongo.yml up", {
+          docker: true
+        })
           .then(msg => {
             console.log(msg);
             process.exit(0);
