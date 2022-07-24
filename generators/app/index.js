@@ -39,7 +39,9 @@ module.exports = class expressCrud extends Generator {
           }
         ]);
 
-        await exec("npm link generator-express-crud");
+        this.devMode.install
+          ? await exec("npm link generator-express-crud")
+          : await exec("npm install generator-express-crud");
       } else {
         this.log(
           "You need to have generator-express-crud installed in order to properly work!"
