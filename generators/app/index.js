@@ -57,7 +57,7 @@ module.exports = class expressCrud extends Generator {
         type: "input",
         name: "modelFile",
         message:
-          "Insert you model .yaml filename inside the source folder that contains your data model business\n If no model found it will be a default test model: ",
+          "Insert you model .yaml filename inside the destination folder that contains your data model business\n If no model found it will be a default test model: ",
         default: "model.yaml"
       }
     ]);
