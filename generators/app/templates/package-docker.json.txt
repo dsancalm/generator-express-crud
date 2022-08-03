@@ -9,9 +9,9 @@
     "build": "npm run clean && tsc -p tsconfig-build.json",
     "prestart": "npm run build",
     "clean": "rm -rf dist",
-    "database" : "docker-compose -f database/mongo.yml up"
     "dev": "npm run generate && ./node_modules/nodemon/bin/nodemon.js",
-		"generate": "tsoa routes && tsoa swagger"
+		"generate": "tsoa routes && tsoa swagger",
+    "database" : "docker-compose -f database/mongo.yml up"
   },
   "keywords": [],
   "author": "",

@@ -1,12 +1,22 @@
 /* eslint-disable func-names */
 /* eslint-disable no-unused-vars */
 const { exec } = require("child_process");
+var Spinner = require("cli-spinner").Spinner;
 
-module.exports = async function execPromptOutput(command, execOptions = {}) {
+module.exports = async function execPromptOutput(
+  command,
+  execOptions = {},
+  spinnerMsg = "processing..."
+) {
+  var spinner = new Spinner(spinnerMsg + "... %s \n");
+
+  spinner.setSpinnerString("|/-\\");
+
   if (execOptions.docker) {
-    return execDockerCommand(command);
+    return execDockerCommand(command, spinnerMsg);
   }
 
+  spinner.start();
   return new Promise((resolve, reject) => {
     const childProcess = exec(command, execOptions);
 
@@ -18,37 +28,71 @@ module.exports = async function execPromptOutput(command, execOptions = {}) {
       console.log(data);
     });
     // Handle exit
-    childProcess.on("exit", () => resolve());
-    childProcess.on("close", () => resolve());
+    childProcess.on("exit", () => {
+      spinner.stop();
+      resolve();
+    });
+    childProcess.on("close", () => {
+      spinner.stop();
+      resolve();
+    });
     // Handle errors
-    childProcess.on("error", error => reject(error));
+    childProcess.on("error", error => {
+      spinner.stop();
+      reject(error);
+    });
     // Handle finish
+    childProcess.on("finish", () => {
+      spinner.stop();
+      resolve();
+    });
   });
 };
 
-async function execDockerCommand(command) {
+async function execDockerCommand(command, spinnerMsg) {
+  var spinner = new Spinner(spinnerMsg + "... %s \n");
+
+  spinner.setSpinnerString("|/-\\");
+  spinner.start();
+
   return new Promise((resolve, reject) => {
     const childProcess = exec(command);
 
-    // Stream process output to console
-    childProcess.stderr.on("data", data => {
-      console.error(data);
-    });
     childProcess.stdout.on("data", data => {
+      console.log(data);
+      if (data.includes("Running")) {
+        spinner.stop();
+        resolve("You already have a MongoDB running !!");
+      }
+
       const logArray = parseDockerLogs(data);
       logArray.forEach(log => {
         const obj = JSON.parse(log);
         if (obj.msg === "Waiting for connections") {
+          spinner.stop();
           resolve("Database succesfully mounted on Docker !!");
         }
       });
     });
     // Handle exit
-    childProcess.on("exit", () => resolve());
-    childProcess.on("close", () => resolve());
+    childProcess.on("exit", () => {
+      spinner.stop();
+      resolve();
+    });
+    childProcess.on("close", () => {
+      spinner.stop();
+      resolve();
+    });
     // Handle errors
-    childProcess.on("error", error => reject(error));
+    childProcess.on("error", error => {
+      spinner.stop();
+      reject(error);
+    });
     // Handle finish
+    childProcess.on("finish", () => {
+      spinner.stop();
+      resolve();
+    });
   });
 }
 

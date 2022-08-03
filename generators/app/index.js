@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-expressions */
 /* eslint-disable no-negated-condition */
 "use strict";
 const Generator = require("yeoman-generator");
@@ -19,35 +18,11 @@ module.exports = class expressCrud extends Generator {
     const installed = fs.existsSync(this.templatePath());
 
     if (!installed) {
-      this.installation = await this.prompt([
-        {
-          type: "confirm",
-          name: "install",
-          message:
-            "Seems that you dont have installed generator-express-crud, do you want to install it ? :",
-          default: true
-        }
-      ]);
-
-      if (this.installation.install) {
-        this.devMode = await this.prompt([
-          {
-            type: "confirm",
-            name: "install",
-            message: "In dev mode (npm link) ? :",
-            default: true
-          }
-        ]);
-
-        this.devMode.install
-          ? await exec("npm link generator-express-crud")
-          : await exec("npm install generator-express-crud");
-      } else {
-        this.log(
-          "You need to have generator-express-crud installed in order to properly work!"
-        );
-        process.exit(1);
-      }
+      await exec(
+        "npm link generator-express-crud",
+        {},
+        "Installing dependencies"
+      );
     }
   }
 
@@ -144,11 +119,25 @@ module.exports = class expressCrud extends Generator {
       this.templatePath("tsconfig.json.txt"),
       this.destinationPath("tsconfig.json")
     );
-    // Copy package standard config
-    this.fs.copyTplAsync(
-      this.templatePath("package.json.txt"),
-      this.destinationPath("package.json")
-    );
+
+    // Copy package.json
+    if (this.database.type === "docker") {
+      this.fs.copyTplAsync(
+        this.templatePath("package-docker.json.txt"),
+        this.destinationPath("package.json")
+      );
+
+      this.fs.copyTplAsync(
+        this.templatePath("database/mongo.yml"),
+        this.destinationPath("src/database/mongo.yml")
+      );
+    } else {
+      this.fs.copyTplAsync(
+        this.templatePath("package.json.txt"),
+        this.destinationPath("package.json")
+      );
+    }
+
     // Copy ts standard  build config
     this.fs.copyTplAsync(
       this.templatePath("tsconfig-build.json.txt"),
@@ -315,21 +304,9 @@ module.exports = class expressCrud extends Generator {
         }
       );
     }
-
-    if (this.database.type === "docker") {
-      this.fs.copyTplAsync(
-        this.templatePath("database/mongo.yml"),
-        this.destinationPath("src/database/mongo.yml")
-      );
-    }
   }
 
   async end() {
-    this.log("Documentation API Generated via Swagger");
-    this.log(
-      `You can check it by executing 'npm run dev' and checking http://localhost:${this.appConfig.port}/docs`
-    );
-
     if (this.database.type === "docker") {
       const launchDocker = await this.prompt([
         {
@@ -341,18 +318,24 @@ module.exports = class expressCrud extends Generator {
       ]);
 
       if (launchDocker.useCompose) {
-        await exec("docker-compose -f src/database/mongo.yml up", {
-          docker: true
-        })
+        await exec(
+          "docker-compose -f src/database/mongo.yml up",
+          {
+            docker: true
+          },
+          "Setting up Docker"
+        )
           .then(msg => {
-            console.log(msg);
-            process.exit(0);
+            console.log("\n" + msg);
           })
           .catch(err => {
-            console.error(err);
-            process.exit(1);
+            console.error("\n" + err);
           });
       }
     }
+
+    this.log(
+      `Documentation API Generated via Swagger \n \n You can check it by executing 'npm run dev' and checking http://localhost:${this.appConfig.port}/docs`
+    );
   }
 };
