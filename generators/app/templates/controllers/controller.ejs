@@ -11,6 +11,7 @@ import ServiceError from "@common/exception/ServiceError";
 */
 @Route('/<%= modelVar %>')
 @ProvideSingleton(<%= modelName %>Controller)
+@Tags("<%= modelName %>")
 export class <%= modelName %>Controller extends Controller {
 
   constructor(@inject(<%= modelName %>ServiceImpl) private <%= modelVar %>Service: I<%= modelName %>Service) {
@@ -18,6 +19,10 @@ export class <%= modelName %>Controller extends Controller {
 	}
 
 
+  /**
+   * Save a new <%= modelName %>. The identifier of the entity isn't mandatory so you can leave it undefined (not written). 
+   * If you leave it undefined, the 'DAO' layer will generate and assign an ID to you entity automatically.
+   */
   @Response<{ message: string }>(400, "Bad request")
   @SuccessResponse("200", "Request Success")
   @Post('/save')
@@ -37,6 +42,10 @@ export class <%= modelName %>Controller extends Controller {
 
 
 
+
+  /**
+   * Return a <%= modelName %> by its ID.
+   */
   @Response<{ message: string }>(400, "Bad request")
   @SuccessResponse("200", "Request Success")
   @Get('/getById')
@@ -55,6 +64,9 @@ export class <%= modelName %>Controller extends Controller {
   }
 
 
+  /**
+   * Return all <%= modelName %>.
+   */
   @Response<{ message: string }>(400, "Bad request")
   @SuccessResponse("200", "Request Success")
   @Get('/getAll')
@@ -73,6 +85,9 @@ export class <%= modelName %>Controller extends Controller {
   }
 
 
+  /**
+   * Delete a <%= modelName %> by its ID.
+   */
   @Response<{ message: string }>(400, "Bad request")
   @SuccessResponse("200", "Success")
   @Delete('/deleteById')
@@ -90,6 +105,10 @@ export class <%= modelName %>Controller extends Controller {
   }
 
 
+
+  /**
+   * Update a <%= modelName %> by its ID.
+   */
   @Response<{ message: string }>(400, "Bad request")
   @SuccessResponse("200", "Request Success")
   @Put('/update')
