@@ -127,14 +127,14 @@ Server started at http://localhost:8080
   ### Example entity model in YAML format
 ```YAML
 Alumno:
-	nombre: String
-	apellidos: String
-	edad: Number
-	nota: Number
+ nombre: String
+ apellidos: String
+ edad: Number
+ nota: Number
 Profesor:
-	nombre: String
-	apellidos: String
-	edad: Number
+ nombre: String
+ apellidos: String
+ edad: Number
 ```
 ## NPM Package
 You can check this package too in [NPMJS](https://www.npmjs.com/package/generator-express-crud  "npm")
