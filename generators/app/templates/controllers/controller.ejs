@@ -1,7 +1,7 @@
 import I<%= modelName %>Service from "@interfaces/service/I<%= modelName %>Service";
 import I<%= modelName %> from "@models/entities/<%= modelName %>";
 import { <%= modelName %>ServiceImpl } from "@service/<%= modelName %>ServiceImpl";
-import { Controller, Get, Route, Query, Delete, Put, Body, Post, Response, SuccessResponse } from 'tsoa';
+import { Controller, Get, Route, Query, Delete, Put, Body, Post, Response, SuccessResponse, Tags } from 'tsoa';
 import { ProvideSingleton, inject } from '@ioc/ioc';
 import ServiceError from "@common/exception/ServiceError";
 
