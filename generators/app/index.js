@@ -300,7 +300,7 @@ module.exports = class expressCrud extends Generator {
         {
           mongoUrl:
             this.databaseConfig?.mongoUrl ||
-            this.databaseConfig?.port ||
+            "localhost:" + this.databaseConfig?.port ||
             "mongodb://root:pass@localhost:27017/?authMechanism=DEFAULT" // Docker compose default URL
         }
       );
@@ -325,13 +325,12 @@ module.exports = class expressCrud extends Generator {
           console.log(
             "Docker daemon not running, you must be running docker in order to launch the compose file, you can launch it later ( see package.json )"
           );
-          return;
+        } else {
+          await launchCommand(
+            "docker-compose -f src/database/mongo.yml up -d",
+            "Setting up Docker"
+          );
         }
-
-        await launchCommand(
-          "docker-compose -f src/database/mongo.yml up -d",
-          "Setting up Docker"
-        );
       }
     }
 
