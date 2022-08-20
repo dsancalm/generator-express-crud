@@ -13,10 +13,18 @@ export default class <%= modelName %>DaoImpl implements I<%= modelName %>Dao {
   public async save<%= modelName %>(<%= modelVar %>: I<%= modelName %>): Promise<I<%= modelName %>> {
     //Do some business logic...
     try {
-      const document = await <%= modelName %>Repository.findOne({ id<%= modelName %>: <%= modelVar %>.id<%= modelName %>  })
-        .exec();
-      if (document) {
-        return Promise.reject(new DaoError("Already Exists!"));
+      if (!<%= modelVar %>.id<%= modelName %>) {
+        //Input ID not defined, generating one...
+        const totalDocuments =
+          await <%= modelName %>Repository.estimatedDocumentCount().exec();
+        <%= modelVar %>.id<%= modelName %> = (totalDocuments + 1).toString();
+      } 
+      else {
+        const document = await <%= modelName %>Repository.findOne({ id<%= modelName %>: <%= modelVar %>.id<%= modelName %>  })
+          .exec();
+        if (document) {
+          return Promise.reject(new DaoError("Already Exists!"));
+        }
       }
       return (await <%= modelName %>Repository.create(<%= modelVar %>)).toObject();
     } catch (err) {
