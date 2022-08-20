@@ -1,140 +1,110 @@
-/* eslint-disable func-names */
+/* eslint-disable no-unused-expressions */
 /* eslint-disable no-unused-vars */
-const { exec } = require("child_process");
-var Spinner = require("cli-spinner").Spinner;
+const terminal = require("child_process");
+const ora = require("ora");
+const { Observable } = require("rxjs");
 
-module.exports = async function execPromptOutput(
-  command,
-  execOptions = {},
-  spinnerMsg = "processing..."
-) {
-  var spinner = new Spinner(spinnerMsg + "... %s \n");
+var spinner = ora({ spinner: "dots", color: "red" });
 
-  spinner.setSpinnerString("|/-\\");
+module.exports = { launchCommand, exec, execPromptOut, checkDocker };
 
-  if (execOptions.docker) {
-    return execDockerCommand(command, spinnerMsg);
-  }
-
-  spinner.start();
+function launchCommand(command, msg) {
   return new Promise((resolve, reject) => {
-    const childProcess = exec(command, execOptions);
+    const subscription = execObservable(command, msg).subscribe({
+      next: code => {
+        if (code === 1) {
+          resolve(false);
+        }
+
+        resolve(true);
+      }
+    });
+  });
+}
+
+function exec(command, spinnerMsg = "processing...") {
+  spinner.text = spinnerMsg;
+  spinner.start();
+
+  return new Promise((resolve, reject) => {
+    const childProcess = terminal.exec(command);
+    // Handle exit
+    childProcess.on("exit", code => {
+      code === 0 ? spinner.succeed() : spinner.fail();
+      resolve(code);
+    });
+    // Handle errors
+    childProcess.on("error", error => {
+      spinner.fail();
+      reject(error);
+    });
+  });
+}
+
+function execObservable(command, spinnerMsg = "processing...") {
+  spinner.text = spinnerMsg;
+  spinner.start();
+
+  return new Observable(subscriber => {
+    const childProcess = terminal.exec(command);
+    // Handle exit
+    childProcess.on("exit", code => {
+      subscriber.next(code);
+      subscriber.complete();
+      code === 0 ? spinner.succeed() : spinner.fail();
+    });
+    // Handle errors
+    childProcess.on("error", error => {
+      subscriber.next(error);
+      subscriber.complete();
+      spinner.fail();
+    });
+  });
+}
+
+function execPromptOut(command, spinnerMsg = "processing...") {
+  spinner.text = spinnerMsg;
+  spinner.start();
+
+  return new Observable(subscriber => {
+    const childProcess = terminal.exec(command);
 
     // Stream process output to console
     childProcess.stderr.on("data", data => {
-      console.error(data);
+      subscriber.next(data);
     });
     childProcess.stdout.on("data", data => {
-      console.log(data);
+      subscriber.next(data);
     });
+
     // Handle exit
-    childProcess.on("exit", () => {
-      spinner.stop();
-      resolve();
-    });
-    childProcess.on("close", () => {
-      spinner.stop();
-      resolve();
+    childProcess.on("exit", code => {
+      subscriber.next(code);
+      subscriber.complete();
+      code === 0 ? spinner.succeed() : spinner.fail();
     });
     // Handle errors
     childProcess.on("error", error => {
-      spinner.stop();
-      reject(error);
-    });
-    // Handle finish
-    childProcess.on("finish", () => {
-      spinner.stop();
-      resolve();
+      subscriber.next(error);
+      subscriber.complete();
+      spinner.fail();
     });
   });
-};
+}
 
-async function execDockerCommand(command, spinnerMsg) {
-  var spinner = new Spinner(spinnerMsg + "... %s \n");
-
-  spinner.setSpinnerString("|/-\\");
-  spinner.start();
-
+function checkDocker() {
   return new Promise((resolve, reject) => {
-    const childProcess = exec(command);
-
-    childProcess.stdout.on("data", data => {
-      console.log(data);
-      if (data.includes("Running")) {
-        spinner.stop();
-        resolve("You already have a MongoDB running !!");
-      }
-
-      const logArray = parseDockerLogs(data);
-      logArray.forEach(log => {
-        const obj = JSON.parse(log);
-        if (obj.msg === "Waiting for connections") {
-          spinner.stop();
-          resolve("Database succesfully mounted on Docker !!");
+    const subscription = execObservable(
+      "docker version",
+      "Checking Docker"
+    ).subscribe({
+      next: code => {
+        if (code === 1) {
+          resolve(false);
         }
-      });
-    });
-    // Handle exit
-    childProcess.on("exit", () => {
-      spinner.stop();
-      resolve();
-    });
-    childProcess.on("close", () => {
-      spinner.stop();
-      resolve();
-    });
-    // Handle errors
-    childProcess.on("error", error => {
-      spinner.stop();
-      reject(error);
-    });
-    // Handle finish
-    childProcess.on("finish", () => {
-      spinner.stop();
-      resolve();
+
+        resolve(true);
+      }
     });
   });
-}
-
-function isJson(str) {
-  try {
-    JSON.parse(str);
-  } catch {
-    return false;
-  }
-
-  return true;
-}
-
-function parseDockerLogs(str) {
-  let openBrackets = 0;
-  let closeBrackets = 0;
-  let openBracketIndex = -1;
-  let closeBracketIndex = -1;
-
-  let objects = [];
-
-  for (var i = 0; i < str.length; i++) {
-    const char = str.charAt(i);
-    if (char === "{") {
-      if (openBracketIndex < 0) {
-        openBracketIndex = i;
-      }
-
-      openBrackets += 1;
-    }
-
-    if (char === "}") {
-      closeBrackets += 1;
-      if (openBrackets === closeBrackets) {
-        closeBracketIndex = i + 1;
-        const obj = str.substring(openBracketIndex, closeBracketIndex);
-        objects.push(obj.trim());
-        openBracketIndex = -1;
-        closeBracketIndex = -1;
-      }
-    }
-  }
-
-  return objects;
 }

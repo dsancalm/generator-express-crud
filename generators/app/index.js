@@ -6,7 +6,9 @@ const yosay = require("yosay");
 const yaml = require("js-yaml");
 const fs = require("fs");
 const validate = require("./validate");
-const exec = require("./terminal");
+const terminal = require("./terminal");
+const checkDocker = terminal.checkDocker;
+const launchCommand = terminal.launchCommand;
 
 module.exports = class expressCrud extends Generator {
   async initializing() {
@@ -18,9 +20,8 @@ module.exports = class expressCrud extends Generator {
     const installed = fs.existsSync(this.templatePath());
 
     if (!installed) {
-      await exec(
+      await launchCommand(
         "npm link generator-express-crud",
-        {},
         "Installing dependencies"
       );
     }
@@ -318,23 +319,23 @@ module.exports = class expressCrud extends Generator {
       ]);
 
       if (launchDocker.useCompose) {
-        await exec(
-          "docker-compose -f src/database/mongo.yml up",
-          {
-            docker: true
-          },
+        const onDocker = await checkDocker();
+
+        if (!onDocker) {
+          console.log(
+            "Docker daemon not running, you must be running docker in order to launch the compose file, you can launch it later ( see package.json )"
+          );
+          return;
+        }
+
+        await launchCommand(
+          "docker-compose -f src/database/mongo.yml up -d",
           "Setting up Docker"
-        )
-          .then(msg => {
-            console.log("\n" + msg);
-          })
-          .catch(err => {
-            console.error("\n" + err);
-          });
+        );
       }
     }
 
-    this.log(
+    console.log(
       `Documentation API Generated via Swagger \n \n You can check it by executing 'npm run dev' and checking http://localhost:${this.appConfig.port}/docs`
     );
   }
