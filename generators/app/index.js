@@ -58,7 +58,8 @@ module.exports = class expressCrud extends Generator {
             value: "none"
           },
           {
-            name: "I already have a database ( specify port later )",
+            name:
+              "I already have a database ( specify port later and URL in database.ts file )",
             value: "port"
           },
           {
