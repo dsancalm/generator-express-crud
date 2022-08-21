@@ -10,7 +10,8 @@
     "prestart": "npm run build",
     "clean": "rm -rf dist",
     "dev": "npm run generate && ./node_modules/nodemon/bin/nodemon.js",
-		"generate": "tsoa routes && tsoa swagger"
+		"generate": "tsoa routes && tsoa swagger",
+    "database" : "docker-compose -f database/mongo.yml up"
   },
   "keywords": [],
   "author": "",

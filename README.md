@@ -3,7 +3,7 @@
 A NPX tool that allows to the developer to deploy fast TypeScript backend apps only passing a few arguments:
 
  - Backend port
- - Mongo URL Database
+ - Mongo URL Database || Docker Mongo Database
  - Entity model in YAML format
 
 ## Stack
@@ -13,6 +13,7 @@ A NPX tool that allows to the developer to deploy fast TypeScript backend apps o
  - Typescript 4
  - Tsoa
  - Mongoose
+ - Docker
 
 
 
