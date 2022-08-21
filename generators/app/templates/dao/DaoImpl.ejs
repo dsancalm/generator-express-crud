@@ -1,4 +1,5 @@
 import I<%= modelName %>Dao from "@interfaces/dao/I<%= modelName %>Dao";
+import { v4 as uuidv4 } from "uuid";
 import { <%= modelName %>Repository } from "@repository/<%= modelName %>Repository";
 import I<%= modelName %> from "@models/entities/<%= modelName %>";
 import { ProvideSingleton } from '@ioc/ioc';
@@ -15,9 +16,7 @@ export default class <%= modelName %>DaoImpl implements I<%= modelName %>Dao {
     try {
       if (!<%= modelVar %>.id<%= modelName %>) {
         //Input ID not defined, generating one...
-        const totalDocuments =
-          await <%= modelName %>Repository.estimatedDocumentCount().exec();
-        <%= modelVar %>.id<%= modelName %> = (totalDocuments + 1).toString();
+        <%= modelVar %>.id<%= modelName %> = uuidv4().replaceAll("-", "").toLowerCase();
       } 
       else {
         const document = await <%= modelName %>Repository.findOne({ id<%= modelName %>: <%= modelVar %>.id<%= modelName %>  })
