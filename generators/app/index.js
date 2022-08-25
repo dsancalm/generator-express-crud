@@ -96,6 +96,8 @@ module.exports = class expressCrud extends Generator {
           default: 27017
         }
       ]);
+      this.databaseConfig.port =
+        "mongodb://root:pass@localhost:" + this.databaseConfig.port;
     }
   }
 
@@ -301,7 +303,7 @@ module.exports = class expressCrud extends Generator {
         {
           mongoUrl:
             this.databaseConfig?.mongoUrl ||
-            "localhost:" + this.databaseConfig?.port ||
+            this.databaseConfig?.port ||
             "mongodb://root:pass@localhost:27017/?authMechanism=DEFAULT" // Docker compose default URL
         }
       );

@@ -11,7 +11,7 @@
     "clean": "rm -rf dist",
     "dev": "npm run generate && ./node_modules/nodemon/bin/nodemon.js",
 		"generate": "tsoa routes && tsoa swagger",
-    "database" : "docker-compose -f database/mongo.yml up"
+    "database" : "docker-compose -f database/mongo.yml up -d"
   },
   "keywords": [],
   "author": "",
