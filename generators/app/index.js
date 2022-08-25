@@ -96,7 +96,8 @@ module.exports = class expressCrud extends Generator {
           default: 27017
         }
       ]);
-      this.databaseConfig.port = "localhost:" + this.databaseConfig.port;
+      this.databaseConfig.port =
+        "mongodb://root:pass@localhost:" + this.databaseConfig.port;
     }
   }
 
