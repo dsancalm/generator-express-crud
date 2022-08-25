@@ -1,6 +1,6 @@
 {
   "name": "generator-express-crud",
-  "version": "0.4.5",
+  "version": "0.4.10",
   "description": "A NPX tool that allows to the developer to deploy fast backend apps only passing a few arguments, like the port, url database or entity model in yaml format",
   "homepage": "https://github.com/dsancalm/generator-express-crud",
   "author": {
@@ -42,6 +42,8 @@
   "dependencies": {
     "chalk": "^2.1.0",
     "js-yaml": "^4.1.0",
+    "ora": "5.4.1",
+    "rxjs": "^7.5.6",
     "yeoman-environment": "^3.9.1",
     "yeoman-generator": "^5.6.1",
     "yosay": "^2.0.2"

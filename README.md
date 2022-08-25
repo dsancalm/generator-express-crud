@@ -3,7 +3,7 @@
 A NPX tool that allows to the developer to deploy fast TypeScript backend apps only passing a few arguments:
 
  - Backend port
- - Mongo URL Database
+ - Mongo URL Database || Docker Mongo Database
  - Entity model in YAML format
 
 ## Stack
@@ -13,6 +13,7 @@ A NPX tool that allows to the developer to deploy fast TypeScript backend apps o
  - Typescript 4
  - Tsoa
  - Mongoose
+ - Docker
 
 
 
@@ -127,14 +128,14 @@ Server started at http://localhost:8080
   ### Example entity model in YAML format
 ```YAML
 Alumno:
-	nombre: String
-	apellidos: String
-	edad: Number
-	nota: Number
+ nombre: String
+ apellidos: String
+ edad: Number
+ nota: Number
 Profesor:
-	nombre: String
-	apellidos: String
-	edad: Number
+ nombre: String
+ apellidos: String
+ edad: Number
 ```
 ## NPM Package
 You can check this package too in [NPMJS](https://www.npmjs.com/package/generator-express-crud  "npm")

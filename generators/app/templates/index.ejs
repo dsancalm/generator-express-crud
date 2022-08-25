@@ -42,9 +42,9 @@ app.use(function (
 			const details = {
 				method: req?.method,
 				url: req?.path,
-				status: response?.request?.status || req.statusCode,
-				code: response?.request?.code || req.statusMessage,
-				body: response?.data || {},
+				status: res.statusCode,
+				code: res.statusMessage,
+				body: response || {},
 			};
 			console.log(details);
 		});
