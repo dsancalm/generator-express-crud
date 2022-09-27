@@ -1,0 +1,11 @@
+import BaseEntity from "@models/BaseEntity";
+
+
+
+export default interface BaseDao<T extends BaseEntity> {
+    save(test: T): Promise<T>;
+    getById(idToReturn: string): Promise<T>;
+    getAll(): Promise<T[]>;
+    update(entityToUpdate: T): Promise<T>;
+    deleteById(idToDelete: string): Promise<T>;
+}

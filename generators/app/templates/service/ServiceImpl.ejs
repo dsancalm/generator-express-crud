@@ -17,7 +17,7 @@ export class <%= modelName %>ServiceImpl implements I<%= modelName %>Service {
     //Do some business logic...
     try {
       return await this.<%= modelVar %>Dao
-        .delete<%= modelName %>ById(id);
+        .deleteById(id);
     } catch (err) {
       if (err instanceof DaoError) {
         //Do the business logic error you want...
@@ -50,7 +50,7 @@ export class <%= modelName %>ServiceImpl implements I<%= modelName %>Service {
     //Do some business logic...
     try {
       return await this.<%= modelVar %>Dao
-        .update<%= modelName %>(<%= modelVar %>);
+        .update(<%= modelVar %>);
     } catch (err) {
       if (err instanceof DaoError) {
         //Do the business logic error you want...
@@ -66,7 +66,7 @@ export class <%= modelName %>ServiceImpl implements I<%= modelName %>Service {
     //Do some business logic...
     try {
       return await this.<%= modelVar %>Dao
-        .get<%= modelName %>ById(id);
+        .getById(id);
     } catch (err) {
       if (err instanceof DaoError) {
         //Do the business logic error you want...
@@ -82,7 +82,7 @@ export class <%= modelName %>ServiceImpl implements I<%= modelName %>Service {
     //Do some business logic...
     try {
       return await this.<%= modelVar %>Dao
-        .save<%= modelName %>(<%= modelVar %>);
+        .save(<%= modelVar %>);
     } catch (err) {
       if (err instanceof DaoError) {
         //Do the business logic error you want...

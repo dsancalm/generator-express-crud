@@ -1,5 +1,6 @@
 import I<%= modelName %> from "@models/entities/<%= modelName %>";
-import { Document, Schema, model } from "mongoose";
+import { ProvideSingleton } from "@ioc/ioc";
+import { Document, Schema, model, Model } from "mongoose";
 /**
 * Repository I<%= modelName %>
 */
@@ -7,9 +8,11 @@ interface I<%= modelName %>Document extends I<%= modelName %>, Document {}
 
 const <%= modelName %>Fields: Record<keyof I<%= modelName %>, any> = {
 
-  id<%= modelName %>: {
+  ID: {
     type: String,
     required: true,
+    unique: true,
+    index:true
   },
   <%= modelFields %>
 };
@@ -31,9 +34,10 @@ const <%= modelName %>Schema = new Schema(<%= modelName %>Fields, {
   },
 });
 
+@ProvideSingleton(<%= modelName %>Repository)
+export class <%= modelName %>Repository {
+  public model : Schema = <%= modelName %>Schema;
+  public repository : Model<I<%= modelName %>Document > = model<I<%= modelName %>Document >("<%= modelName %>", <%= modelName %>Schema);
+}
 
-
-
-const <%= modelName %>Repository = model<I<%= modelName %>Document>("<%= modelName %>", <%= modelName %>Schema);
-
-export { <%= modelName %>Repository, I<%= modelName %>Document };
+export { I<%= modelName %>Document };

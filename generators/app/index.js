@@ -274,6 +274,22 @@ module.exports = class expressCrud extends Generator {
       );
     });
 
+    // Copy generic classes
+    this.fs.copyTplAsync(
+      this.templatePath("dao/BaseDaoImpl.ejs"),
+      this.destinationPath("src/dao/BaseDaoImpl.ts")
+    );
+
+    this.fs.copyTplAsync(
+      this.templatePath("interfaces/BaseDao.ejs"),
+      this.destinationPath("src/interfaces/BaseDao.ts")
+    );
+
+    this.fs.copyTplAsync(
+      this.templatePath("models/BaseEntity.ejs"),
+      this.destinationPath("src/models/BaseEntity.ts")
+    );
+
     // Copy standard exception classes
     this.fs.copyTplAsync(
       this.templatePath("common/exception/DaoError.ejs"),
@@ -301,10 +317,7 @@ module.exports = class expressCrud extends Generator {
         this.templatePath("database.ejs"),
         this.destinationPath("src/database.ts"),
         {
-          mongoUrl:
-            this.databaseConfig?.mongoUrl ||
-            this.databaseConfig?.port ||
-            "mongodb://root:pass@localhost:27017/?authMechanism=DEFAULT" // Docker compose default URL
+          mongoUrl: "mongodb://root:pass@localhost:27017/?authMechanism=DEFAULT" // Docker compose default URL
         }
       );
     }
