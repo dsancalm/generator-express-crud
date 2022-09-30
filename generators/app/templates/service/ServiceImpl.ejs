@@ -29,6 +29,21 @@ export class <%= modelName %>ServiceImpl implements I<%= modelName %>Service {
     }
   }
 
+  public async get(page: number, size: number): Promise<I<%= modelName %>[]>  {
+    //Do some business logic...
+    try {
+      return await this.<%= modelVar %>Dao.get(page, size);
+    } catch (err) {
+      if (err instanceof DaoError) {
+        //Do the business logic error you want...
+        const error = new ServiceError(err.message, err.stack);
+        return Promise.reject(error);
+      } else {
+        return Promise.reject(new ServiceError("Unknown error"));
+      }
+    }
+  }
+
 
   public async getAll(): Promise<I<%= modelName %>[]> {
     //Do some business logic...

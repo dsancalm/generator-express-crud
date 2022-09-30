@@ -63,6 +63,26 @@ export class <%= modelName %>Controller extends Controller {
     }
   }
 
+  /**
+  * Return a set of <%= modelName %>. Page starts at 0.
+  */
+ @Response<{ message: string }>(400, "Bad request")
+ @SuccessResponse("200", "Request Success")
+ @Get("/get")
+ public async get(@Query() page: number,@Query() size:number): Promise<I<%= modelName %>[]> {
+   //Do some business logic...
+   try {
+     return await this.<%= modelVar %>Service.get(page,size);
+   } catch (err) {
+     if (err instanceof ServiceError) {
+       //Do the business logic error you want...
+       return Promise.reject(err.message);
+     } else {
+       return Promise.reject("Unknown error");
+     }
+   }
+ }
+
 
   /**
    * Return all <%= modelName %>.
