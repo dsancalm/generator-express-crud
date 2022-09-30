@@ -1,6 +1,6 @@
+import BaseEntity from "../BaseEntity";
 
-export default interface I<%= modelName %> {
-  id<%= modelName %>?: string;
+export default interface I<%= modelName %> extends BaseEntity {
   <%= modelBody %>
 }
 

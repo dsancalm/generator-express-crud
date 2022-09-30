@@ -13,11 +13,26 @@ import ServiceError from "@common/exception/ServiceError";
 export class <%= modelName %>ServiceImpl implements I<%= modelName %>Service {
   constructor(@inject(<%= modelName %>DaoImpl) private <%= modelVar %>Dao: I<%= modelName %>Dao) {}
 
-  public async delete<%= modelName %>ById(id: string): Promise<I<%= modelName %>> {
+  public async deleteById(id: string): Promise<I<%= modelName %>> {
     //Do some business logic...
     try {
       return await this.<%= modelVar %>Dao
-        .delete<%= modelName %>ById(id);
+        .deleteById(id);
+    } catch (err) {
+      if (err instanceof DaoError) {
+        //Do the business logic error you want...
+        const error = new ServiceError(err.message, err.stack);
+        return Promise.reject(error);
+      } else {
+        return Promise.reject(new ServiceError("Unknown error"));
+      }
+    }
+  }
+
+  public async get(page: number, size: number): Promise<I<%= modelName %>[]>  {
+    //Do some business logic...
+    try {
+      return await this.<%= modelVar %>Dao.get(page, size);
     } catch (err) {
       if (err instanceof DaoError) {
         //Do the business logic error you want...
@@ -46,11 +61,11 @@ export class <%= modelName %>ServiceImpl implements I<%= modelName %>Service {
     }
   }
 
-  public async update<%= modelName %>(<%= modelVar %>: I<%= modelName %>): Promise<I<%= modelName %>> {
+  public async update(<%= modelVar %>: I<%= modelName %>): Promise<I<%= modelName %>> {
     //Do some business logic...
     try {
       return await this.<%= modelVar %>Dao
-        .update<%= modelName %>(<%= modelVar %>);
+        .update(<%= modelVar %>);
     } catch (err) {
       if (err instanceof DaoError) {
         //Do the business logic error you want...
@@ -62,11 +77,11 @@ export class <%= modelName %>ServiceImpl implements I<%= modelName %>Service {
     }
   }
 
-  public async get<%= modelName %>ById(id: string): Promise<I<%= modelName %>> {
+  public async getById(id: string): Promise<I<%= modelName %>> {
     //Do some business logic...
     try {
       return await this.<%= modelVar %>Dao
-        .get<%= modelName %>ById(id);
+        .getById(id);
     } catch (err) {
       if (err instanceof DaoError) {
         //Do the business logic error you want...
@@ -78,11 +93,11 @@ export class <%= modelName %>ServiceImpl implements I<%= modelName %>Service {
     }
   }
 
-  public async save<%= modelName %>(<%= modelVar %>: I<%= modelName %>): Promise<I<%= modelName %>> {
+  public async save(<%= modelVar %>: I<%= modelName %>): Promise<I<%= modelName %>> {
     //Do some business logic...
     try {
       return await this.<%= modelVar %>Dao
-        .save<%= modelName %>(<%= modelVar %>);
+        .save(<%= modelVar %>);
     } catch (err) {
       if (err instanceof DaoError) {
         //Do the business logic error you want...

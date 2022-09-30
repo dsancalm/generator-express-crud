@@ -1,12 +1,13 @@
 import I<%= modelName %> from "@models/entities/<%= modelName %>";
 
 /**
-* Abstract class I<%= modelName %>Service
+* Interface I<%= modelName %>Service
 */
-export default abstract class I<%= modelName %>Service {
-  abstract save<%= modelName %>(<%= modelVar %>: I<%= modelName %>): Promise<I<%= modelName %>>;
-  abstract get<%= modelName %>ById(id: string): Promise<I<%= modelName %>>;
-  abstract getAll(): Promise<I<%= modelName %>[]>;
-  abstract delete<%= modelName %>ById(id: string): Promise<I<%= modelName %>>;
-  abstract update<%= modelName %>(<%= modelVar %>: I<%= modelName %>): Promise<I<%= modelName %>>;
+export default interface I<%= modelName %>Service {
+  save(<%= modelVar %>: I<%= modelName %>): Promise<I<%= modelName %>>;
+  getById(id: string): Promise<I<%= modelName %>>;
+  get(page: number, size: number): Promise<I<%= modelName %>[]>;
+  getAll(): Promise<I<%= modelName %>[]>;
+  deleteById(id: string): Promise<I<%= modelName %>>;
+  update(<%= modelVar %>: I<%= modelName %>): Promise<I<%= modelName %>>;
 }

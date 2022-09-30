@@ -26,10 +26,10 @@ export class <%= modelName %>Controller extends Controller {
   @Response<{ message: string }>(400, "Bad request")
   @SuccessResponse("200", "Request Success")
   @Post('/save')
-  public async save<%= modelName %>(@Body() <%= modelVar %>: I<%= modelName %>): Promise<I<%= modelName %>> {
+  public async save(@Body() <%= modelVar %>: I<%= modelName %>): Promise<I<%= modelName %>> {
     //Do some business logic...
     try {
-			return await this.<%= modelVar %>Service.save<%= modelName %>(<%= modelVar %>);
+			return await this.<%= modelVar %>Service.save(<%= modelVar %>);
 		} catch (err) {
       if (err instanceof ServiceError) {
         //Do the business logic error you want...
@@ -49,10 +49,10 @@ export class <%= modelName %>Controller extends Controller {
   @Response<{ message: string }>(400, "Bad request")
   @SuccessResponse("200", "Request Success")
   @Get('/getById')
-  public async get<%= modelName %>ById(@Query() id: string): Promise<I<%= modelName %>>  {
+  public async getById(@Query() id: string): Promise<I<%= modelName %>>  {
     //Do some business logic...
     try {
-			return await this.<%= modelVar %>Service.get<%= modelName %>ById(id);
+			return await this.<%= modelVar %>Service.getById(id);
 		} catch (err) {
       if (err instanceof ServiceError) {
         //Do the business logic error you want...
@@ -62,6 +62,26 @@ export class <%= modelName %>Controller extends Controller {
       }
     }
   }
+
+  /**
+  * Return a set of <%= modelName %>. Page starts at 0.
+  */
+ @Response<{ message: string }>(400, "Bad request")
+ @SuccessResponse("200", "Request Success")
+ @Get("/get")
+ public async get(@Query() page: number,@Query() size:number): Promise<I<%= modelName %>[]> {
+   //Do some business logic...
+   try {
+     return await this.<%= modelVar %>Service.get(page,size);
+   } catch (err) {
+     if (err instanceof ServiceError) {
+       //Do the business logic error you want...
+       return Promise.reject(err.message);
+     } else {
+       return Promise.reject("Unknown error");
+     }
+   }
+ }
 
 
   /**
@@ -91,9 +111,9 @@ export class <%= modelName %>Controller extends Controller {
   @Response<{ message: string }>(400, "Bad request")
   @SuccessResponse("200", "Success")
   @Delete('/deleteById')
-  public async delete<%= modelName %>ById(@Query() id: string): Promise<I<%= modelName %>>  {
+  public async deleteById(@Query() id: string): Promise<I<%= modelName %>>  {
     try {
-			return await this.<%= modelVar %>Service.delete<%= modelName %>ById(id);
+			return await this.<%= modelVar %>Service.deleteById(id);
 		} catch (err) {
       if (err instanceof ServiceError) {
         //Do the business logic error you want...
@@ -112,11 +132,11 @@ export class <%= modelName %>Controller extends Controller {
   @Response<{ message: string }>(400, "Bad request")
   @SuccessResponse("200", "Request Success")
   @Put('/update')
-  public async update<%= modelName %>(@Body() <%= modelVar %>: I<%= modelName %>): Promise<I<%= modelName %>> {
+  public async update(@Body() <%= modelVar %>: I<%= modelName %>): Promise<I<%= modelName %>> {
 
     //Do some business logic...
     try {
-			return await this.<%= modelVar %>Service.update<%= modelName %>(<%= modelVar %>);
+			return await this.<%= modelVar %>Service.update(<%= modelVar %>);
 		} catch (err) {
       if (err instanceof ServiceError) {
         //Do the business logic error you want...

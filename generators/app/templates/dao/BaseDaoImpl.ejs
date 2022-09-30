@@ -1,0 +1,152 @@
+import { v4 as uuidv4 } from "uuid";
+import { injectable } from '@ioc/ioc';
+import mongoose, { Document, Model, SortOrder } from 'mongoose';
+import DaoError from '@common/exception/DaoError';
+import BaseDao from "../interfaces/BaseDao";
+import BaseEntity from "@models/BaseEntity";
+
+/**
+* BaseDaoImpl
+*/
+@injectable()
+export default class BaseDaoImpl<T extends BaseEntity, S extends Document> implements BaseDao<T> {
+
+  constructor(private repository : Model<S>) {}
+
+  public async save(entityToSave: T): Promise<T> {
+    //Do some business logic...
+    try {
+      if (!entityToSave.ID) {
+        //Input ID not defined, generating one...
+        entityToSave.ID = uuidv4().toLowerCase().replace(/-/g,'');
+      } 
+      else {
+        const document = await this.repository.findOne({ ID: entityToSave.ID  })
+          .exec();
+        if (document) {
+          return Promise.reject(new DaoError("Already Exists!"));
+        }
+      }
+      return (await this.repository.create(entityToSave)).toObject();
+    } catch (err) {
+      //Do the business logic error you want...
+			if (err instanceof mongoose.Error) {
+				const error = new DaoError(err.message, err.stack);
+				return Promise.reject(error);
+			} else {
+				return Promise.reject(new DaoError('Unknown error'));
+			}
+		}
+    
+  }
+
+  public async getById(idToReturn: string): Promise<T> {
+    //Do some business logic...
+
+    try {
+      const res = await this.repository.findOne({ ID: idToReturn })
+        .exec();
+
+      return res ? res.toObject() : Promise.reject(new DaoError("Not found!"));
+    } catch (err) {
+      //Do the business logic error you want...
+			if (err instanceof mongoose.Error) {
+				const error = new DaoError(err.message, err.stack);
+				return Promise.reject(error);
+			} else {
+				return Promise.reject(new DaoError('Unknown error'));
+			}
+		}
+  }
+
+  public async get(page: number, size: number): Promise<T[]> {
+    //Do some business logic...
+    try {
+      const res = await this.repository.find().limit(size).skip(size*page).exec();
+      return res.map(function (document) {
+        return document.toObject();
+      });
+    } catch (err) {
+			if (err instanceof mongoose.Error) {
+				const error = new DaoError(err.message, err.stack);
+				return Promise.reject(error);
+			} else {
+				return Promise.reject(new DaoError('Unknown error'));
+			}
+		}
+  }
+
+  public async getSorted(page: number, size: number, order: Array<[string, SortOrder]>): Promise<T[]> {
+    //Do some business logic...
+    try {
+      const res = await this.repository.find().limit(size).skip(size*page).sort(order).exec();
+      return res.map(function (document) {
+        return document.toObject();
+      });
+    } catch (err) {
+			if (err instanceof mongoose.Error) {
+				const error = new DaoError(err.message, err.stack);
+				return Promise.reject(error);
+			} else {
+				return Promise.reject(new DaoError('Unknown error'));
+			}
+		}
+  }
+
+  public async getAll(): Promise<T[]> {
+    //Do some business logic...
+    try {
+      const res = await this.repository.find().exec();
+      return res.map(function (document) {
+        return document.toObject();
+      });
+    } catch (err) {
+			if (err instanceof mongoose.Error) {
+				const error = new DaoError(err.message, err.stack);
+				return Promise.reject(error);
+			} else {
+				return Promise.reject(new DaoError('Unknown error'));
+			}
+		}
+  }
+
+  public async update(entityToUpdate: T): Promise<T> {
+    //Do some business logic...
+    try {
+      const res = await this.repository.findOneAndUpdate({ ID: entityToUpdate.ID }, entityToUpdate, {
+        new: true,
+      }).exec();
+
+      return res ? res.toObject() : Promise.reject(new DaoError("Not found!"));
+    } catch (err) {
+
+      //Do the business logic error you want...
+			if (err instanceof mongoose.Error) {
+				const error = new DaoError(err.message, err.stack);
+				return Promise.reject(error);
+			} else {
+				return Promise.reject(new DaoError('Unknown error'));
+			}
+		}
+  }
+
+  public async deleteById(idToDelete: string): Promise<T> {
+    //Do some business logic...
+    try {
+      const res = await this.repository.findOneAndDelete({
+        ID: idToDelete,
+      }).exec();
+
+      return res ? res.toObject() : Promise.reject(new DaoError("Not found!"));
+    } catch (err) {
+
+      //Do the business logic error you want...
+			if (err instanceof mongoose.Error) {
+				const error = new DaoError(err.message, err.stack);
+				return Promise.reject(error);
+			} else {
+				return Promise.reject(new DaoError('Unknown error'));
+			}
+		}
+  }
+}

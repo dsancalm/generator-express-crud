@@ -1,11 +1,8 @@
 import I<%= modelName %> from "@models/entities/<%= modelName %>";
+import BaseDao from "../BaseDao";
 /**
-* Abstract class I<%= modelName %>Dao
+* Interface I<%= modelName %>Dao
 */
-export default abstract class I<%= modelName %>Dao {
-  abstract save<%= modelName %>(<%= modelVar %>: I<%= modelName %>): Promise<I<%= modelName %>>;
-  abstract get<%= modelName %>ById(id: string): Promise<I<%= modelName %>>;
-  abstract getAll(): Promise<I<%= modelName %>[]>;
-  abstract update<%= modelName %>(<%= modelVar %>: I<%= modelName %>): Promise<I<%= modelName %>>;
-  abstract delete<%= modelName %>ById(id: string): Promise<I<%= modelName %>>;
+export default interface I<%= modelName %>Dao extends BaseDao<I<%= modelName %>> {
+  
 }

@@ -1,116 +1,16 @@
 import I<%= modelName %>Dao from "@interfaces/dao/I<%= modelName %>Dao";
-import { v4 as uuidv4 } from "uuid";
-import { <%= modelName %>Repository } from "@repository/<%= modelName %>Repository";
+import { I<%= modelName %>Document, <%= modelName %>Repository } from "@repository/<%= modelName %>Repository";
 import I<%= modelName %> from "@models/entities/<%= modelName %>";
-import { ProvideSingleton } from '@ioc/ioc';
-import mongoose from 'mongoose';
-import DaoError from '@common/exception/DaoError';
+import { inject, ProvideSingleton } from '@ioc/ioc';
+import BaseDaoImpl from "./BaseDaoImpl";
 
 /**
 * Dao <%= modelName %>DaoImpl
 */
 @ProvideSingleton(<%= modelName %>DaoImpl)
-export default class <%= modelName %>DaoImpl implements I<%= modelName %>Dao {
-  public async save<%= modelName %>(<%= modelVar %>: I<%= modelName %>): Promise<I<%= modelName %>> {
-    //Do some business logic...
-    try {
-      if (!<%= modelVar %>.id<%= modelName %>) {
-        //Input ID not defined, generating one...
-        <%= modelVar %>.id<%= modelName %> = uuidv4().replaceAll("-", "").toLowerCase();
-      } 
-      else {
-        const document = await <%= modelName %>Repository.findOne({ id<%= modelName %>: <%= modelVar %>.id<%= modelName %>  })
-          .exec();
-        if (document) {
-          return Promise.reject(new DaoError("Already Exists!"));
-        }
-      }
-      return (await <%= modelName %>Repository.create(<%= modelVar %>)).toObject();
-    } catch (err) {
-      //Do the business logic error you want...
-			if (err instanceof mongoose.Error) {
-				const error = new DaoError(err.message, err.stack);
-				return Promise.reject(error);
-			} else {
-				return Promise.reject(new DaoError('Unknown error'));
-			}
-		}
-    
-  }
+export default class <%= modelName %>DaoImpl extends BaseDaoImpl<I<%= modelName %>, I<%= modelName %>Document> implements I<%= modelName %>Dao {
 
-  public async get<%= modelName %>ById(id: string): Promise<I<%= modelName %>> {
-    //Do some business logic...
-
-    try {
-      const res = await <%= modelName %>Repository.findOne({ id<%= modelName %>: id })
-        .exec();
-
-      return res ? res.toObject() : Promise.reject(new DaoError("Not found!"));
-    } catch (err) {
-      //Do the business logic error you want...
-			if (err instanceof mongoose.Error) {
-				const error = new DaoError(err.message, err.stack);
-				return Promise.reject(error);
-			} else {
-				return Promise.reject(new DaoError('Unknown error'));
-			}
-		}
-  }
-
-  public async getAll(): Promise<I<%= modelName %>[]> {
-    //Do some business logic...
-    try {
-      const res = await <%= modelName %>Repository.find().exec();
-      return res.map(function (document) {
-        return document.toObject();
-      });
-    } catch (err) {
-			if (err instanceof mongoose.Error) {
-				const error = new DaoError(err.message, err.stack);
-				return Promise.reject(error);
-			} else {
-				return Promise.reject(new DaoError('Unknown error'));
-			}
-		}
-  }
-
-  public async update<%= modelName %>(<%= modelVar %>: I<%= modelName %>): Promise<I<%= modelName %>> {
-    //Do some business logic...
-    try {
-      const res = await <%= modelName %>Repository.findOneAndUpdate({ id<%= modelName %>: <%= modelVar %>.id<%= modelName %> }, <%= modelVar %>, {
-        new: true,
-      }).exec();
-
-      return res ? res.toObject() : Promise.reject(new DaoError("Not found!"));
-    } catch (err) {
-
-      //Do the business logic error you want...
-			if (err instanceof mongoose.Error) {
-				const error = new DaoError(err.message, err.stack);
-				return Promise.reject(error);
-			} else {
-				return Promise.reject(new DaoError('Unknown error'));
-			}
-		}
-  }
-
-  public async delete<%= modelName %>ById(id: string): Promise<I<%= modelName %>> {
-    //Do some business logic...
-    try {
-      const res = await <%= modelName %>Repository.findOneAndDelete({
-        id<%= modelName %>: id,
-      }).exec();
-
-      return res ? res.toObject() : Promise.reject(new DaoError("Not found!"));
-    } catch (err) {
-
-      //Do the business logic error you want...
-			if (err instanceof mongoose.Error) {
-				const error = new DaoError(err.message, err.stack);
-				return Promise.reject(error);
-			} else {
-				return Promise.reject(new DaoError('Unknown error'));
-			}
-		}
+  constructor(@inject(<%= modelName %>Repository) <%= modelVar %>Repository: <%= modelName %>Repository) {
+    super(<%= modelVar %>Repository.repository);
   }
 }
