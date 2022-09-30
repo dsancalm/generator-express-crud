@@ -161,7 +161,7 @@ module.exports = class expressCrud extends Generator {
 
     // Copy ioc config
     this.fs.copyTplAsync(
-      this.templatePath("ioc/ioc.ts"),
+      this.templatePath("ioc/ioc.ejs"),
       this.destinationPath("src/ioc/ioc.ts")
     );
 
