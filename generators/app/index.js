@@ -54,29 +54,26 @@ module.exports = class expressCrud extends Generator {
         message: "How do you want to create your database? : ",
         choices: [
           {
-            name: "None",
-            value: "none"
-          },
-          {
             name:
-              "I already have a database ( specify port later and URL in database.ts file )",
-            value: "port"
+              "I already have a database (You can edit it later in database.ts)",
+            value: "online"
           },
           {
             name: "Create with Docker",
             value: "docker"
-          },
-          {
-            name: "Online database",
-            value: "online"
           }
         ],
         default: 0
       }
     ]);
 
+    if (this.database.type === "docker") {
+      this.database.mongoUrl =
+        "mongodb://root:pass@localhost:27017/?authMechanism=DEFAULT"; // Docker compose default URL
+    }
+
     if (this.database.type === "online") {
-      this.databaseConfig = await this.prompt([
+      this.database = await this.prompt([
         {
           type: "input",
           name: "mongoUrl",
@@ -85,19 +82,6 @@ module.exports = class expressCrud extends Generator {
           default: "mongodb://mongo:*****@default:6754/"
         }
       ]);
-    }
-
-    if (this.database.type === "port") {
-      this.databaseConfig = await this.prompt([
-        {
-          type: "input",
-          name: "port",
-          message: "Insert your MongoDB port on localhost: ",
-          default: 27017
-        }
-      ]);
-      this.databaseConfig.port =
-        "mongodb://root:pass@localhost:" + this.databaseConfig.port;
     }
   }
 
@@ -317,7 +301,7 @@ module.exports = class expressCrud extends Generator {
         this.templatePath("database.ejs"),
         this.destinationPath("src/database.ts"),
         {
-          mongoUrl: "mongodb://root:pass@localhost:27017/?authMechanism=DEFAULT" // Docker compose default URL
+          mongoUrl: this.database.mongoUrl
         }
       );
     }
