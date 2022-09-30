@@ -54,29 +54,26 @@ module.exports = class expressCrud extends Generator {
         message: "How do you want to create your database? : ",
         choices: [
           {
-            name: "None",
-            value: "none"
-          },
-          {
             name:
-              "I already have a database ( specify port later and URL in database.ts file )",
-            value: "port"
+              "I already have a database (You can edit it later in database.ts)",
+            value: "online"
           },
           {
             name: "Create with Docker",
             value: "docker"
-          },
-          {
-            name: "Online database",
-            value: "online"
           }
         ],
         default: 0
       }
     ]);
 
+    if (this.database.type === "docker") {
+      this.database.mongoUrl =
+        "mongodb://root:pass@localhost:27017/?authMechanism=DEFAULT"; // Docker compose default URL
+    }
+
     if (this.database.type === "online") {
-      this.databaseConfig = await this.prompt([
+      this.database = await this.prompt([
         {
           type: "input",
           name: "mongoUrl",
@@ -85,19 +82,6 @@ module.exports = class expressCrud extends Generator {
           default: "mongodb://mongo:*****@default:6754/"
         }
       ]);
-    }
-
-    if (this.database.type === "port") {
-      this.databaseConfig = await this.prompt([
-        {
-          type: "input",
-          name: "port",
-          message: "Insert your MongoDB port on localhost: ",
-          default: 27017
-        }
-      ]);
-      this.databaseConfig.port =
-        "mongodb://root:pass@localhost:" + this.databaseConfig.port;
     }
   }
 
@@ -161,7 +145,7 @@ module.exports = class expressCrud extends Generator {
 
     // Copy ioc config
     this.fs.copyTplAsync(
-      this.templatePath("ioc/ioc.ts"),
+      this.templatePath("ioc/ioc.ejs"),
       this.destinationPath("src/ioc/ioc.ts")
     );
 
@@ -274,6 +258,22 @@ module.exports = class expressCrud extends Generator {
       );
     });
 
+    // Copy generic classes
+    this.fs.copyTplAsync(
+      this.templatePath("dao/BaseDaoImpl.ejs"),
+      this.destinationPath("src/dao/BaseDaoImpl.ts")
+    );
+
+    this.fs.copyTplAsync(
+      this.templatePath("interfaces/BaseDao.ejs"),
+      this.destinationPath("src/interfaces/BaseDao.ts")
+    );
+
+    this.fs.copyTplAsync(
+      this.templatePath("models/BaseEntity.ejs"),
+      this.destinationPath("src/models/BaseEntity.ts")
+    );
+
     // Copy standard exception classes
     this.fs.copyTplAsync(
       this.templatePath("common/exception/DaoError.ejs"),
@@ -301,10 +301,7 @@ module.exports = class expressCrud extends Generator {
         this.templatePath("database.ejs"),
         this.destinationPath("src/database.ts"),
         {
-          mongoUrl:
-            this.databaseConfig?.mongoUrl ||
-            this.databaseConfig?.port ||
-            "mongodb://root:pass@localhost:27017/?authMechanism=DEFAULT" // Docker compose default URL
+          mongoUrl: this.database.mongoUrl
         }
       );
     }
