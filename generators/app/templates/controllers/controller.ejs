@@ -49,8 +49,11 @@ export class <%= modelName %>Controller extends Controller {
   @Response<{ message: string }>(400, "Bad request")
   @SuccessResponse("200", "Request Success")
   @Get('/getById')
-  public async getById(@Query() id: string): Promise<I<%= modelName %>>  {
+  public async getById(@Query() id?: string): Promise<I<%= modelName %>>  {
     //Do some business logic...
+    if (!id){
+      return Promise.reject("Required 'id' not provided or empty. Check the URL.");
+    }
     try {
 			return await this.<%= modelVar %>Service.getById(id);
 		} catch (err) {
@@ -69,7 +72,7 @@ export class <%= modelName %>Controller extends Controller {
  @Response<{ message: string }>(400, "Bad request")
  @SuccessResponse("200", "Request Success")
  @Get("/get")
- public async get(@Query() page: number,@Query() size:number): Promise<I<%= modelName %>[]> {
+ public async get(@Query() page: number = 0,@Query() size:number = 10): Promise<I<%= modelName %>[]> {
    //Do some business logic...
    try {
      return await this.<%= modelVar %>Service.get(page,size);
@@ -111,7 +114,10 @@ export class <%= modelName %>Controller extends Controller {
   @Response<{ message: string }>(400, "Bad request")
   @SuccessResponse("200", "Success")
   @Delete('/deleteById')
-  public async deleteById(@Query() id: string): Promise<I<%= modelName %>>  {
+  public async deleteById(@Query() id?: string): Promise<I<%= modelName %>>  {
+    if (!id){
+      return Promise.reject("Required 'id' not provided or empty. Check the URL.");
+    }
     try {
 			return await this.<%= modelVar %>Service.deleteById(id);
 		} catch (err) {

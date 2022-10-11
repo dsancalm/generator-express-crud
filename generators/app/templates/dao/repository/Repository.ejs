@@ -37,7 +37,7 @@ const <%= modelName %>Schema = new Schema(<%= modelName %>Fields, {
 @ProvideSingleton(<%= modelName %>Repository)
 export class <%= modelName %>Repository {
   public model : Schema = <%= modelName %>Schema;
-  public repository : Model<I<%= modelName %>Document > = model<I<%= modelName %>Document >("<%= modelName %>", <%= modelName %>Schema);
+  public repository : Model<I<%= modelName %>Document > = model<I<%= modelName %>Document>("<%= modelName %>", <%= modelName %>Schema);
 }
 
 export { I<%= modelName %>Document };
