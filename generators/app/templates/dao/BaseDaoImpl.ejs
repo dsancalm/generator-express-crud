@@ -59,10 +59,17 @@ export default class BaseDaoImpl<T extends BaseEntity, S extends Document> imple
 		}
   }
 
-  public async get(page: number, size: number): Promise<T[]> {
+  public async get(page: number, size: number, filters: Array<[string, string]>): Promise<T[]> {
     //Do some business logic...
     try {
-      const res = await this.repository.find().limit(size).skip(size*page).exec();
+      let query: any = {};
+      //Mount filters
+      filters.forEach((f) => {
+        let key = f[0];
+        let value = f[1];
+        query[key] = value;
+      })
+      const res = await this.repository.find(query).limit(size).skip(size*page).exec();
       return res.map(function (document) {
         return document.toObject();
       });

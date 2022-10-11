@@ -6,7 +6,7 @@ import I<%= modelName %> from "@models/entities/<%= modelName %>";
 export default interface I<%= modelName %>Service {
   save(<%= modelVar %>: I<%= modelName %>): Promise<I<%= modelName %>>;
   getById(id: string): Promise<I<%= modelName %>>;
-  get(page: number, size: number): Promise<I<%= modelName %>[]>;
+  get(page: number, size: number, filters: Array<[string, string]>): Promise<I<%= modelName %>[]>;
   getAll(): Promise<I<%= modelName %>[]>;
   deleteById(id: string): Promise<I<%= modelName %>>;
   update(<%= modelVar %>: I<%= modelName %>): Promise<I<%= modelName %>>;

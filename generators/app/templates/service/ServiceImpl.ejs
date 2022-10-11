@@ -29,10 +29,10 @@ export class <%= modelName %>ServiceImpl implements I<%= modelName %>Service {
     }
   }
 
-  public async get(page: number, size: number): Promise<I<%= modelName %>[]>  {
+  public async get(page: number, size: number, filters: Array<[string, string]>): Promise<I<%= modelName %>[]>  {
     //Do some business logic...
     try {
-      return await this.<%= modelVar %>Dao.get(page, size);
+      return await this.<%= modelVar %>Dao.get(page, size, filters);
     } catch (err) {
       if (err instanceof DaoError) {
         //Do the business logic error you want...
