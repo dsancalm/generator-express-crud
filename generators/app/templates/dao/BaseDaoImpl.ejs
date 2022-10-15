@@ -59,34 +59,19 @@ export default class BaseDaoImpl<T extends BaseEntity, S extends Document> imple
 		}
   }
 
-  public async get(page: number, size: number, filters: Array<[string, string]>): Promise<T[]> {
+  public async get(page: number, size: number, filters?: Array<[string, string]>, order?: Array<[string, SortOrder]>): Promise<T[]> {
     //Do some business logic...
     try {
       let query: any = {};
       //Mount filters
-      filters.forEach((f) => {
-        let key = f[0];
-        let value = f[1];
-        query[key] = value;
-      })
-      const res = await this.repository.find(query).limit(size).skip(size*page).exec();
-      return res.map(function (document) {
-        return document.toObject();
-      });
-    } catch (err) {
-			if (err instanceof mongoose.Error) {
-				const error = new DaoError(err.message, err.stack);
-				return Promise.reject(error);
-			} else {
-				return Promise.reject(new DaoError('Unknown error'));
-			}
-		}
-  }
-
-  public async getSorted(page: number, size: number, order: Array<[string, SortOrder]>): Promise<T[]> {
-    //Do some business logic...
-    try {
-      const res = await this.repository.find().limit(size).skip(size*page).sort(order).exec();
+      if (filters) {
+        filters.forEach((f) => {
+          let key = f[0];
+          let value = f[1];
+          query[key] = value;
+        })
+      }
+      const res = await this.repository.find(query).limit(size).skip(size * page).sort(order).exec();
       return res.map(function (document) {
         return document.toObject();
       });

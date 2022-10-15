@@ -5,6 +5,7 @@ import { <%= modelName %>ServiceImpl } from "@service/<%= modelName %>ServiceImp
 import { Controller, Get, Route, Query, Delete, Put, Body, Post, Response, SuccessResponse, Tags, Request } from 'tsoa';
 import { ProvideSingleton, inject } from '@ioc/ioc';
 import ServiceError from "@common/exception/ServiceError";
+import { SortOrder } from "mongoose";
 
 
 /**
@@ -68,7 +69,12 @@ export class <%= modelName %>Controller extends Controller {
   }
 
   /**
-  * Return a set of <%= modelName %>. Page starts at 0.
+  * Return a set of <%= modelName %>. Page starts at 0. 
+  * You can filter the result by adding at the end of the URL query params like this: '&name=Pepe&subname=Frog'. 
+  * Also you can order the result by adding the name of the field to be sortered like this: '&name=asc'. 
+  * The options are 'asc' for ascending order and 'desc' for descending order.
+  * OpenAPI can't show these params because it's extracted directly from Express Request Object.
+  * Note: You can't use both params at the same time like this: '&name=Pepe&name=asc'. If you do, only the first param will be taken into account.
   */
  @Response<{ message: string }>(400, "Bad request")
  @SuccessResponse("200", "Request Success")
@@ -76,14 +82,22 @@ export class <%= modelName %>Controller extends Controller {
  public async get(@Request() request: express.Request, @Query() page: number = 0,@Query() size:number = 10): Promise<I<%= modelName %>[]> {
    //Do some business logic...
    let filters = new Array<[string, string]>();
+   let order = new Array<[string, SortOrder]>();
    Object.keys(request.query).forEach((key) => {
-    let value = request.query[key];
-    if (key !== 'page' && key !== 'size' && typeof value === 'string' ){
-      filters.push([key,value]);
-    }
+     let value = request.query[key];
+     if (Array.isArray(value)) {
+       let valueCopy = value[0];
+       value = valueCopy;
+     }
+     if (typeof value === 'string' && (value === 'asc' || value === 'desc')) {
+       order.push([key, value]);
+     }
+     else if (key !== 'page' && key !== 'size' && typeof value === 'string') {
+       filters.push([key, value]);
+     }
    })
    try {
-     return await this.<%= modelVar %>Service.get(page,size,filters);
+     return await this.<%= modelVar %>Service.get(page,size,filters, order);
    } catch (err) {
      if (err instanceof ServiceError) {
        //Do the business logic error you want...

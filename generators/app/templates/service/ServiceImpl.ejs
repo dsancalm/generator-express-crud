@@ -5,6 +5,7 @@ import I<%= modelName %> from "@models/entities/<%= modelName %>";
 import { ProvideSingleton, inject } from '@ioc/ioc';
 import DaoError from "@common/exception/DaoError";
 import ServiceError from "@common/exception/ServiceError";
+import { SortOrder } from "mongoose";
 
 /**
 * Service <%= modelName %>ServiceImpl
@@ -29,10 +30,10 @@ export class <%= modelName %>ServiceImpl implements I<%= modelName %>Service {
     }
   }
 
-  public async get(page: number, size: number, filters: Array<[string, string]>): Promise<I<%= modelName %>[]>  {
+  public async get(page: number, size: number, filters: Array<[string, string]>, order: Array<[string, SortOrder]>): Promise<I<%= modelName %>[]>  {
     //Do some business logic...
     try {
-      return await this.<%= modelVar %>Dao.get(page, size, filters);
+      return await this.<%= modelVar %>Dao.get(page, size, filters, order);
     } catch (err) {
       if (err instanceof DaoError) {
         //Do the business logic error you want...
