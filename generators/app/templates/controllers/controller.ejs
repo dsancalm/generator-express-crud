@@ -152,6 +152,63 @@ export class <%= modelName %>Controller extends Controller {
     }
   }
 
+  /**
+  * Delete a set of <%= modelName %> given a filter.
+  * The filter must be like this at the end of the URL: '&name=Pepe&subname=Frog'. 
+  * OpenAPI can't show these params because it's extracted directly from Express Request Object.
+  * Note: You can't use both params at the same time like this: '&name=Pepe&name=Frog'. If you do, only the first param will be taken into account.
+  */
+  @Response<{ message: string }>(400, "Bad request")
+  @SuccessResponse("200", "Request Success")
+  @Delete("/delete")
+  public async delete(@Request() request: express.Request): Promise<{ message: string }> {
+    //Do some business logic...
+    let filters = new Array<[string, string]>();
+    Object.keys(request.query).forEach((key) => {
+      let value = request.query[key];
+      if (Array.isArray(value)) {
+        let valueCopy = value[0];
+        value = valueCopy;
+      }
+      if (key !== 'page' && key !== 'size' && typeof value === 'string') {
+        filters.push([key, value]);
+      }
+    })
+    if (filters.length === 0) {
+      return Promise.reject("No filter provided, please check the URL. If you want to delete all members of collection, use /deleteAll instead.");
+    }
+    try {
+      return await this.<%= modelVar %>Service.delete(filters);
+    } catch (err) {
+      if (err instanceof ServiceError) {
+        //Do the business logic error you want...
+        return Promise.reject(err.message);
+      } else {
+        return Promise.reject("Unknown error");
+      }
+    }
+  }
+
+  /**
+  * Delete all members of <%= modelName %>.
+  */
+  @Response<{ message: string }>(400, "Bad request")
+  @SuccessResponse("200", "Request Success")
+  @Delete("/deleteAll")
+  public async deleteAll(): Promise<{ message: string }> {
+    //Do some business logic...
+    try {
+      return await this.<%= modelVar %>Service.deleteAll();
+    } catch (err) {
+      if (err instanceof ServiceError) {
+        //Do the business logic error you want...
+        return Promise.reject(err.message);
+      } else {
+        return Promise.reject("Unknown error");
+      }
+    }
+  }
+
 
 
   /**

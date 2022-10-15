@@ -141,4 +141,44 @@ export default class BaseDaoImpl<T extends BaseEntity, S extends Document> imple
 			}
 		}
   }
+
+
+  public async delete(filters: Array<[string, string]>): Promise<{ message: string }> {
+    //Do some business logic...
+    try {
+      let query: any = {};
+      //Mount filters
+      if (filters) {
+        filters.forEach((f) => {
+          let key = f[0];
+          let value = f[1];
+          query[key] = value;
+        })
+      }
+      const res = await this.repository.deleteMany(query).exec();
+      return {message: "Deleted " + res.deletedCount + " elements."};
+    } catch (err) {
+      if (err instanceof mongoose.Error) {
+        const error = new DaoError(err.message, err.stack);
+        return Promise.reject(error);
+      } else {
+        return Promise.reject(new DaoError('Unknown error'));
+      }
+    }
+  }
+
+  public async deleteAll(): Promise<{ message: string }> {
+    //Do some business logic...
+    try {
+      const res = await this.repository.deleteMany({}).exec();
+      return {message: "Deleted " + res.deletedCount + " elements."};
+    } catch (err) {
+      if (err instanceof mongoose.Error) {
+        const error = new DaoError(err.message, err.stack);
+        return Promise.reject(error);
+      } else {
+        return Promise.reject(new DaoError('Unknown error'));
+      }
+    }
+  }
 }

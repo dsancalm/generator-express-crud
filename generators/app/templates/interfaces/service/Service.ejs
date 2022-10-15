@@ -10,5 +10,7 @@ export default interface I<%= modelName %>Service {
   get(page: number, size: number, filters: Array<[string, string]>, order: Array<[string, SortOrder]>): Promise<I<%= modelName %>[]>;
   getAll(): Promise<I<%= modelName %>[]>;
   deleteById(id: string): Promise<I<%= modelName %>>;
+  delete(filters: Array<[string, string]>): Promise<{ message: string }>;
+  deleteAll(): Promise<{ message: string }>;
   update(<%= modelVar %>: I<%= modelName %>): Promise<I<%= modelName %>>;
 }
